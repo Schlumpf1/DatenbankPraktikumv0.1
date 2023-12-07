@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"!>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <title>Speisekarte</title>
+    </head>
+    <body>
+        <div class="container">
+            <h1 style="color:blue;">Ihr Restaurant bei Lieferspatz!</h1>
+            <!--Liste der Items auf der Speisekarte-->
+            
+                <div class="h-25 col-sm-9" style="background-color:yellow;">
+                   
+                    <div class="row" style="height: 50px; padding-top: 10px;"> 
+                        <div class="col-sm-1"></div>   
+                        <div class ="h-25 col-sm-7">Speisekarte</div>
+                        <button type="button" class="h-25 col-sm-3 btn" onclick="runPythonScript()">Neue Speise</button>
+                        <div class="col-sm-1"></div>
+                    </div>    
+                    
+                    <ul class="list-group">
+                        <!--vielleicht bietet sich es mehr an href bei bearbeiten & löschen zu benutzen-->
+                        {% for item in items %}
+                            <li class="list-group-item" style="list-style-type: none;">
+                                <div class="row">
+                                    <div class="col-sm-1"></div>
+                                    <div class="col-sm-5">
+                                        {{ item.name }}
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <button type="button" class="btn" onclick="deleteThisItem()">löschen</button>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <button type="button" class="btn" onclick="bearbeiteDiesesItem()">bearbeiten</button>
+                                    </div>
+                            </li>  
+                        {% endfor %}  
+                    </ul>
+                </div>
+                <!--DropdownMenü-->
+                <div class="col-sm-3" style="background-color:pink; padding-top: 50px;">
+                    <ul role="menu" aria-labelledby="menu1">
+                        <li><a role="menuitem" tabindex="-1" href="#">Bestellungen</a></li>
+                        <li><a role="menuitem" tabindex="-1" href="#">Archiv</a></li>
+                        <li class="list-group-item" style="list-style-type: none; background-color:transparent; border-color: transparent;" ></li>
+                        <li><a role="menuitem" tabindex="-1" href="#">Öffnungszeiten</a></li>
+                        <li><a role="menuitem" tabindex="-1" href="#">Liefergebiet bearbeiten</a></li>
+                    </ul>
+                </div>
+            
+             <!--
+            <div class="row">
+                
+                <div class="col-sm-9" style="background-color:yellow;">
+                    Speisekarte
+                </div>
+            </div>
+            //-->
+        </div>    
+    </body>
+</html>
+<!--
+
+
+//-->
