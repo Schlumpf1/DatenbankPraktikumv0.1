@@ -1,5 +1,4 @@
 import sqlite3
-import os
 from module_item import *
 
 ####################
@@ -64,6 +63,9 @@ def insertExampleData_All():
     #speisekartenId = 1
     print("SpeisekartenId",speisekartenId)
     insertNewItem(speisekartenId,"Das beste Essen",0,"Nicht vorhandene Beschreibung",None)
+    insertNewItem(speisekartenId,"Das beste Essen1",0,"Nicht vorhandene Beschreibung",None)
+    insertNewItem(speisekartenId,"Das beste Essen2",0,"Nicht vorhandene Beschreibung",None)
+    insertNewItem(speisekartenId,"Das beste Essen3",0,"Nicht vorhandene Beschreibung",None)
     
 #
 #Kundenaccountverwaltungsmethoden
@@ -176,9 +178,10 @@ def insertNewItem(speisekartenId,name,preis,beschreibung,bild):
     con.close()
     
 #so sollen nicht mehr zu verkaufstehende Items wieder gelöscht werden
-def removeItemKarte():
+def removeItemFromSpeisekarte(itemId):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
+    cur.execute("DELETE FROM items WHERE itemId =" +str(itemId))
     cur.close()
     con.commit()
     con.close()
@@ -189,15 +192,4 @@ def removeItemKarte():
 #Ende Methodendefinition
 #
 
-os.remove("Database.db")
-#Erstellt die Verbindung zur Datenbank
-con = sqlite3.connect("Database.db")
 
-
-
-#rufe folgende Methoden sofort auf
-createTB_All()
-insertExampleData_All()
-#beendet die Verbindung zur Datenbank
-#cur.close()
-con.close()

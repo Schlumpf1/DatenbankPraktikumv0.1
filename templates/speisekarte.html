@@ -29,10 +29,14 @@
                                 <div class="row">
                                     <div class="col-sm-1"></div>
                                     <div class="col-sm-5">
-                                        {{ item.name }}
+                                        {{ item.itemId }}
                                     </div>
                                     <div class="col-sm-3">
-                                        <button type="button" class="btn" onclick="deleteThisItem()">löschen</button>
+                                        <form action="{{ url_for('delete_Item',itemId =item.itemId) }}" method=post >
+                                            <input type=hidden name=itemId_to_delete value="{{item.itemId}}"  />
+                                            <button type="submit">löschen</button>
+                                          </form>
+                                        
                                     </div>
                                     <div class="col-sm-3">
                                         <button type="button" class="btn" onclick="bearbeiteDiesesItem()">bearbeiten</button>
@@ -60,9 +64,10 @@
                 </div>
             </div>
             //-->
-        </div>    
+        </div>  
     </body>
-</html>
+    
+    </html>
 <!--
 
 
