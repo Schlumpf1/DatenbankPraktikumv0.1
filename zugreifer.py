@@ -1,6 +1,6 @@
 import sqlite3
 from module_item import *
-
+from module_openingTime import *
 ####################
 ##____Methoden____##
 ####################
@@ -45,6 +45,12 @@ def createTB_Speisekarte():
 
     #ist die Speisekaarte an sich so noetig??
 
+def createTB_OpeningTimes():
+    con = sqlite3.connect('Database.db')
+    cur = con.cursor()
+    cur.execute("CREATE TABLE 'openingTimes'('id' INTEGER PRIMARY KEY AUTOINCREMENT,'restaurant_id' INTEGER, 'day' TEXT, 'fromTime' TEXT,'toTime' TEXT, FOREIGN KEY(restaurant_id) REFERENCES restaurant(restaurantId))")
+    cur.execute("")
+
 #fuegt in die Datenabnk alle Tabellen ein
 def createTB_All():
     createTB_Kunde()
@@ -52,7 +58,7 @@ def createTB_All():
     createTB_Item()
     createTB_Bestellung()
     createTB_Speisekarte()
-
+    createTB_OpeningTimes()
 
 def insertExampleData_All():
     #Kunde
@@ -128,9 +134,29 @@ def insertNewSpeisekarte(restaurantId):
     
 
 # ändert die Öffnungszeiten in der Datenbank zu Restaurent
-def changeOeffnungszeiten(restaurantname, neueoeffnungszeiten):
+def addOpeningTimes(restaurantId, day, fromTime, toTime):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
+    cur.execute("INSERT INTO openingTimes(restaurant_id, day, fromTime, toTime) VALUES(?,?,?,?)", (restaurantId, day,fromTime,toTime))
+    cur.close()
+    con.commit()
+    con.close()
+
+def getOpeningTimesForRestaurant(restaurantId):
+    con = sqlite3.connect('Database.db')
+    cur = con.cursor()
+    result = cur.execute("SELECT * FROM openingTimes WHERE restaurant_id=" + str(restaurantId) );  
+    openingTimes = list()
+    for x in result:
+        openingTimes.append(OpeningTime(x[0], x[1], x[2], x[3], x[4]))
+    cur.close()
+    con.close()
+    return openingTimes
+
+def deleteOpeningTimeWithId(id):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    cur.execute("DELETE FROM openingTimes WHERE id =" +str(id))
     cur.close()
     con.commit()
     con.close()
