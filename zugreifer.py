@@ -172,7 +172,8 @@ def getItemsVonSpeisekarte(speisekartenId):
 def insertNewItem(speisekartenId,name,preis,beschreibung,bild):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("INSERT INTO items (speisekartenId,name,preis,beschreibung,bild) VALUES(?,?,?,?,?)",(speisekartenId,name,preis,beschreibung,bild))
+    cur.execute("""INSERT INTO items (speisekartenId,name,preis,beschreibung) VALUES(?,?,?,?)""",int(speisekartenId),str(name),str(preis),str(beschreibung))    
+    
     cur.close()
     con.commit()
     con.close()

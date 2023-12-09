@@ -18,7 +18,7 @@
                     <div class="row" style="height: 50px; padding-top: 10px;"> 
                         <div class="col-sm-1"></div>   
                         <div class ="h-25 col-sm-7">Speisekarte</div>
-                        <button type="button" class="h-25 col-sm-3 btn" onclick="runPythonScript()">Neue Speise</button>
+                        <button type="button" class="h-25 col-sm-3 btn" onclick="window.location.href = 'restaurant/newItem';">Neue Speise</button>
                         <div class="col-sm-1"></div>
                     </div>    
                     
@@ -29,7 +29,7 @@
                                 <div class="row">
                                     <div class="col-sm-1"></div>
                                     <div class="col-sm-5">
-                                        {{ item.itemId }}
+                                        {{ item.name }}
                                     </div>
                                     <div class="col-sm-3">
                                         <form action="{{ url_for('delete_Item',itemId =item.itemId) }}" method=post >
@@ -39,8 +39,11 @@
                                         
                                     </div>
                                     <div class="col-sm-3">
-                                        <button type="button" class="btn" onclick="bearbeiteDiesesItem()">bearbeiten</button>
+                                        <button target="popup" onclick="window.open('', 'popup', 'width=580,height=360,scrollbars=no, toolbar=yes,status=no, resizable=yes,menubar=yes,location=yes,directories=no,top=50,left=50')"href="newItem.html">Bearbeiten</button>
+                                        
                                     </div>
+
+                                    
                             </li>  
                         {% endfor %}  
                     </ul>
@@ -65,7 +68,7 @@
             </div>
             //-->
         </div>  
-    </body>
+        </body>
     
     </html>
 <!--

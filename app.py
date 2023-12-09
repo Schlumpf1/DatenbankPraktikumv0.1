@@ -26,5 +26,20 @@ def restaurant():
 def delete_Item(itemId):
     zugreifer.removeItemFromSpeisekarte(itemId)
     return redirect("/restaurant")
+
+@app.route("/restaurant/newItem")
+def newItem():
+    return render_template('newItem.html')
     
+@app.route("/restaurant/newItem/safe", methods=['POST'])
+def newItem_safe():
+    restaurantId = int(1)
+    itemName = request.form['itemname']
+    itemPreis = request.form['itempreis']
+    itemBeschreibung = request.form['itembeschreibung']
+    itemBild = request.form['itembild']
+    print(itemBild)
+    speisekartenId = zugreifer.getSpeisekarte(restaurantId)
+    zugreifer.insertNewItem(speisekartenId,itemName,itemPreis,itemBeschreibung,itemBild)
+    return redirect("/restaurant")
 
