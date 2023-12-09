@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <title>Opening Times</title>
+</head>
+<body>
+    <div class="container">
+        <form action="/restaurant/openingTime/add" method="post">
+            <select type="text" name="day">
+                <option value="Montag">Montag</option>
+                <option value="Dienstag">Dienstag</option>
+                <option value="Mittwoch">Mittwoch</option>
+                <option value="Donnerstag">Donnerstag</option>
+                <option value="Freitag">Freitag</option>
+                <option value="Samstag">Samstag</option>
+                <option value="Sonntag">Sonntag</option>
+            </select>
+            <label for="from">Von
+                <input type="text" name="from">
+            </label>
+            <label for="to">Bis
+                <input type="text" name="to">
+            </label>
+            <button type="submit">Speichern</button>
+        </form>
+    </div>
+    <div>
+        <ul>
+            {%for monday in mondaysList%}
+            <li class="list-group-item" style="list-style-type: none;">
+                <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-5">
+                        {{ monday.day }} - von {{monday.fromTime}} bis {{monday.toTime}} 
+                    </div>
+                    <div class="col-sm-3">
+                        <form action="{{ url_for('delete_day',id =monday.id) }}" method=post >
+                            <input type=hidden name=day_to_delete value="{{monday.id}}"  />
+                            <button type="submit">löschen</button>
+                        </form>   
+                    </div>
+            </li>  
+            {% endfor %}
+            {%for tuesday in tuesdayList%}
+            <li class="list-group-item" style="list-style-type: none;">
+                <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-5">
+                        {{ tuesday.day }} - von {{tuesday.fromTime}} bis {{tuesday.toTime}} 
+                    </div>
+                    <div class="col-sm-3">
+                        <form action="{{ url_for('delete_day',id =tuesday.id) }}" method=post >
+                            <input type=hidden name=day_to_delete value="{{tuesday.id}}"  />
+                            <button type="submit">löschen</button>
+                        </form>   
+                    </div>
+            </li>  
+            {% endfor %}
+            {%for wednesday in wednesdayList %}
+            <li class="list-group-item" style="list-style-type: none;">
+                <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-5">
+                        {{ wednesday.day }} - von {{wednesday.fromTime}} bis {{wednesday.toTime}} 
+                    </div>
+                    <div class="col-sm-3">
+                        <form action="{{ url_for('delete_day',id =wednesday.id) }}" method=post >
+                            <input type=hidden name=day_to_delete value="{{wednesday.id}}"  />
+                            <button type="submit">löschen</button>
+                        </form>   
+                    </div>
+            </li>  
+            {% endfor %}
+            {%for thursday in thursdayList %}
+            <li class="list-group-item" style="list-style-type: none;">
+                <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-5">
+                        {{ thursday.day }} - von {{thursday.fromTime}} bis {{thursday.toTime}} 
+                    </div>
+                    <div class="col-sm-3">
+                        <form action="{{ url_for('delete_day',id =thursday.id) }}" method=post >
+                            <input type=hidden name=day_to_delete value="{{thursday.id}}"  />
+                            <button type="submit">löschen</button>
+                        </form>   
+                    </div>
+            </li>  
+            {% endfor %}
+            {%for friday in fridayList %}
+            <li class="list-group-item" style="list-style-type: none;">
+                <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-5">
+                        {{ friday.day }} - von {{friday.fromTime}} bis {{friday.toTime}} 
+                    </div>
+                    <div class="col-sm-3">
+                        <form action="{{ url_for('delete_day',id =friday.id) }}" method=post >
+                            <input type=hidden name=day_to_delete value="{{friday.id}}"  />
+                            <button type="submit">löschen</button>
+                        </form>   
+                    </div>
+            </li>  
+            {% endfor %}
+            {%for saturday in saturdayList %}
+            <li class="list-group-item" style="list-style-type: none;">
+                <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-5">
+                        {{ saturday.day }} - von {{saturday.fromTime}} bis {{saturday.toTime}} 
+                    </div>
+                    <div class="col-sm-3">
+                        <form action="{{ url_for('delete_day',id =saturday.id) }}" method=post >
+                            <input type=hidden name=day_to_delete value="{{saturday.id}}"  />
+                            <button type="submit">löschen</button>
+                        </form>   
+                    </div>
+            </li>  
+            {% endfor %}
+            {%for sunday in sundayList %}
+            <li class="list-group-item" style="list-style-type: none;">
+                <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-5">
+                        {{ sunday.day }} - von {{sunday.fromTime}} bis {{sunday.toTime}} 
+                    </div>
+                    <div class="col-sm-3">
+                        <form action="{{ url_for('delete_day',id =sunday.id) }}" method=post >
+                            <input type=hidden name=day_to_delete value="{{sunday.id}}"  />
+                            <button type="submit">löschen</button>
+                        </form>   
+                    </div>
+            </li>  
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
