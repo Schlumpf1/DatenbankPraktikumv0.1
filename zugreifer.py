@@ -16,7 +16,7 @@ def createTB_Kunde():
 def createTB_Restaurant():
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("CREATE TABLE 'restaurant'('username' TEXT PRIMARY KEY , 'password' TEXT, 'name' TEXT,'oeffnungszeiten' INTEGER, 'adresse' TEXT, 'postleitzahl' INTEGER)")
+    cur.execute("CREATE TABLE 'restaurant'('username' TEXT PRIMARY KEY , 'password' TEXT, 'name' TEXT, 'adresse' TEXT)")
     cur.close()
     con.close()
 
@@ -63,7 +63,7 @@ def createTB_All():
 def insertExampleData_All():
     #Kunde
     insertNewKunde("MusterUser","Musterpasswort","Max", "Mustermann", "Musterstrasse 5",47057)
-    restaurantId = insertNewRestaurent("firstRestaurent", "xyz123", "Musterrestaurant", "unbekannt", "Musterwald 5",47057)
+    restaurantId = insertNewRestaurant("firstRestaurant", "xyz123", "Musterrestaurant", "Musterwald 5")
     print("restaurantid",restaurantId)
     speisekartenId = insertNewSpeisekarte(restaurantId)
     #speisekartenId = 1
@@ -110,12 +110,22 @@ def bestellungVorhanden():
 #
 
 #fügt neues restaurant in die Datenbank ein
-def insertNewRestaurent(username, password, name, oeffnungszeiten, adresse,postleitzahl):
+def insertNewRestaurant(username, password, name, adresse):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("INSERT INTO restaurant (username, password, name, oeffnungszeiten, adresse, postleitzahl) VALUES(?,?,?,?,?,?)",
-    (username, password, name, oeffnungszeiten, adresse, postleitzahl))
+    cur.execute("INSERT INTO restaurant (username, password, name, adresse) VALUES(?,?,?,?)",
+    (username, password, name, adresse))
     zwischenspeicher = cur.lastrowid
+    cur.close()
+    con.commit()
+    con.close()
+    return zwischenspeicher
+
+def getPasswordForLoginparams(username):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    cur.execute("SELECT password FROM restaurant WHERE username=" + str(username)) 
+    zwischenspeicher = cur.fetchone()[0]
     cur.close()
     con.commit()
     con.close()

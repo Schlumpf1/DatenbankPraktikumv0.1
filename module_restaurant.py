@@ -23,7 +23,7 @@ class restaurant:
     def adresse(self):
         return self.adresse
 
-    def bild(self):
+    def postleitzahl(self):
         return self.postleitzahl
     
     

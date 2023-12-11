@@ -98,3 +98,32 @@ def delete_day(id):
     print('ja')
     zugreifer.deleteOpeningTimeWithId(id)
     return redirect("/restaurant/openingTime")
+
+@app.route("/restaurant/login", methods =['POST', 'GET'])
+def restaurant_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        #versuch login auszuführen
+        #if zugreifer.getPasswordForLoginparams(username) == password:
+        return redirect("/restaurant")
+        
+    else:
+        return render_template('restaurant_login.html')
+    
+@app.route("/restaurant/registrieren", methods =['POST', 'GET'])
+def restaurant_register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        passwordControll = request.form['passwordControll']
+        restaurantName = request.form['restaurantName']
+        adresse = request.form['adresse']
+        if password == passwordControll:
+            #usernamedopplung pruefen
+            zugreifer.insertNewRestaurant(username, password, restaurantName, adresse)
+            return redirect('/restaurant')
+        
+    else:
+        return render_template('restaurant_register.html')
+
