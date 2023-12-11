@@ -41,7 +41,7 @@ def newItem_safe():
     itemBild = request.form['itembild']
     print(itemBild)
     speisekartenId = zugreifer.getSpeisekarte(restaurantId)
-    zugreifer.insertNewItem(speisekartenId,itemName,itemPreis,itemBeschreibung,itemBild)
+    zugreifer.insertNewItem(speisekartenId,itemName,itemPreis,itemBeschreibung,"BILD")
     return redirect("/restaurant")
 
 

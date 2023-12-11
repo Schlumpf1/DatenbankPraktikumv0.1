@@ -9,14 +9,14 @@ from module_openingTime import *
 def createTB_Kunde():
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("CREATE TABLE 'kunde'('kundenId'INTEGER PRIMARY KEY AUTOINCREMENT,'username' TEXT, 'password' TEXT,'vorname' TEXT, 'nachname' TEXT,'adresse' TEXT, 'postleitzahl' INTEGER)")
+    cur.execute("CREATE TABLE 'kunde'('username' TEXT PRIMARY KEY , 'password' TEXT,'vorname' TEXT, 'nachname' TEXT,'adresse' TEXT, 'postleitzahl' INTEGER)")
     cur.close()
     con.close()
 
-def createTB_Restaurent():
+def createTB_Restaurant():
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("CREATE TABLE 'restaurant'('restaurantId'INTEGER PRIMARY KEY AUTOINCREMENT,'username' TEXT, 'password' TEXT, 'name' TEXT,'oeffnungszeiten' TEXT, 'adresse' TEXT, 'postleitzahl' INTEGER)")
+    cur.execute("CREATE TABLE 'restaurant'('username' TEXT PRIMARY KEY , 'password' TEXT, 'name' TEXT,'oeffnungszeiten' INTEGER, 'adresse' TEXT, 'postleitzahl' INTEGER)")
     cur.close()
     con.close()
 
@@ -54,7 +54,7 @@ def createTB_OpeningTimes():
 #fuegt in die Datenabnk alle Tabellen ein
 def createTB_All():
     createTB_Kunde()
-    createTB_Restaurent()
+    createTB_Restaurant()
     createTB_Item()
     createTB_Bestellung()
     createTB_Speisekarte()
@@ -174,7 +174,7 @@ def getSpeisekarte(restaurantId):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
     cur.execute("SELECT restaurantId FROM speisekarten WHERE restaurantId= "+str(restaurantId))
-    zwischenspeicher = cur.fetchone()
+    zwischenspeicher = cur.fetchone()[0]
     cur.close()
     con.close()
     return zwischenspeicher
@@ -183,7 +183,7 @@ def getSpeisekarte(restaurantId):
 def getItemsVonSpeisekarte(speisekartenId):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    zwischenspeicher = cur.execute("SELECT * FROM items WHERE speisekartenId= ?",speisekartenId)
+    zwischenspeicher = cur.execute("SELECT * FROM items WHERE speisekartenId= "+str(speisekartenId))
     
     itemlist = list()
     
@@ -195,10 +195,12 @@ def getItemsVonSpeisekarte(speisekartenId):
 #    return [item(1,"Apfel","2,70","keine Beschreibung", "Kein Bild"), item(2,"Birne","2,80","keine Beschreibung", "Kein Bild")]
 
 #so sollen neue Speisen, Getraenke & co eingefügt werden können
-def insertNewItem(speisekartenId,name,preis,beschreibung,bild):
+def insertNewItem(speisekartenId, name, preis, beschreibung, bild):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("""INSERT INTO items (speisekartenId,name,preis,beschreibung) VALUES(?,?,?,?)""",int(speisekartenId),str(name),str(preis),str(beschreibung))    
+    item = (speisekartenId ,name ,preis ,beschreibung)
+    print(item)
+    cur.execute("INSERT INTO items (speisekartenId, name, preis, beschreibung) VALUES( ? , ? , ? , ? )", item)  
     
     cur.close()
     con.commit()
