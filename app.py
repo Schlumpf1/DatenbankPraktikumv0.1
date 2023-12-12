@@ -1,4 +1,4 @@
-from flask import Flask, render_template, render_template, redirect, request
+from flask import Flask, render_template, render_template, redirect, request, jsonify
 import zugreifer
 from module_openingTime import *
 import os
@@ -105,11 +105,13 @@ def restaurant_login():
         username = request.form['username']
         password = request.form['password']
         #versuch login auszuführen
-        #if zugreifer.getPasswordForLoginparams(username) == password:
-        return redirect("/restaurant")
+        if zugreifer.existUsername(username):
+            if zugreifer.checkLogindata(username,password):
+                return redirect("/restaurant")
+            
         
-    else:
-        return render_template('restaurant_login.html')
+    #elif request.method == 'GET':
+    return render_template('restaurant_login.html')
     
 @app.route("/restaurant/registrieren", methods =['POST', 'GET'])
 def restaurant_register():
@@ -121,9 +123,13 @@ def restaurant_register():
         adresse = request.form['adresse']
         if password == passwordControll:
             #usernamedopplung pruefen
-            zugreifer.insertNewRestaurant(username, password, restaurantName, adresse)
-            return redirect('/restaurant')
-        
-    else:
-        return render_template('restaurant_register.html')
+            if zugreifer.existUsername(username) ==False:
+                zugreifer.insertNewRestaurant(username, password, restaurantName, adresse)
+                return redirect('/restaurant')
+            else:
+                render_template('restaurant_register.html',message="Username already in use!")
+        else:
+            return jsonify(error='Username already exists!'), 402
+    #Wenn Methode != POST, password != passwordControll
+    return render_template('restaurant_register.html',message = "")
 

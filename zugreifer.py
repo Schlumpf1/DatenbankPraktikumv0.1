@@ -121,15 +121,27 @@ def insertNewRestaurant(username, password, name, adresse):
     con.close()
     return zwischenspeicher
 
-def getPasswordForLoginparams(username):
+def existUsername(username):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("SELECT password FROM restaurant WHERE username=" + str(username)) 
-    zwischenspeicher = cur.fetchone()[0]
+    cur.execute("SELECT EXISTS ( SELECT username FROM restaurant WHERE username = '" +str(username)+"')")
+    zwischenspeicher= cur.fetchone()[0]  
     cur.close()
     con.commit()
     con.close()
     return zwischenspeicher
+
+
+def checkLogindata(username, password):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    cur.execute("SELECT password FROM restaurant WHERE username = '" +str(username)+"'")
+    zwischenspeicher = (cur.fetchone()[0] ==password)
+    cur.close()
+    con.commit()
+    con.close()
+    return zwischenspeicher
+
 
 #fügt eine Speisekarte dem Restaurent hinzu
 def insertNewSpeisekarte(restaurantId):

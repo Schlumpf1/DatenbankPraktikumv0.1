@@ -9,33 +9,71 @@
         <title>Restaurant LOGIN-PAGE</title>
     </head>
     <body>
+        <div class="row">
+            <div class="col-auto mr-auto">
+                <p style="white-space: nowrap; margin:25px;">Restaurant Registrieren</p>
+            </div>
+            <div class="col-auto">
+                <button  type="button" onclick="window.location.href = 'restaurant/login';" >Log IN</button>  
+            </div> 
+        </div>
         <div class="col-sm-2"></div>
-        <div class="col-sm-6" style="background-color:yellow;">
+        <div class="col-sm-8" style="background-color:yellow;">
+            <div class="col-sm-6">
             <form action="/restaurant/registrieren" method="post">
-                <h2>Restaurant Registrieren</h2>
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required >
-        
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-
-                <label for="passwordControll">Password wiederholen:</label>
-                <input type="password" id="passwordControll" name="passwordControll" required>
-
-                <label for="restaurantName">Name ihres Restaurants:</label>
-                <input type="text" id="restaurantName" name="restaurantName" required >
-
-                <label for="Adresse">Adresse ihres Restaurants:</label>
-                <input type="text" id="adresse" name="adresse" required >
-
-                <button type="submit">Registrieren</button>
+                
+                <div class="container" style="margin-top:10px;">
+                    <div class="col-sm-3">
+                        <label for="username">Username:</label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="text" id="username" name="username" required >
+                    </div>
+                </div>
+                <div class="container" style="margin-top:10px;">
+                    <div class="col-sm-3">
+                        <label for="password">Password:</label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                </div>
+                <div class="container" style="margin-top:10px;">
+                    <div class="col-sm-3">
+                        <label for="passwordControll">Password wiederholen:</label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="password" id="passwordControll" name="passwordControll" required>
+                    </div>
+                </div>
+                <div class="container" style="margin-top:10px;">
+                    <div class="col-sm-3">
+                        <label for="restaurantName">Name ihres Restaurants:</label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="text" id="restaurantName" name="restaurantName" required >
+                    </div>
+                </div>
+                <div class="container" style="margin-top:10px;">
+                    <div class="col-sm-3">
+                        <label for="Adresse">Adresse ihres Restaurants:</label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="text" id="adresse" name="adresse" required >
+                    </div>
+                </div>
+                <div class="container" style="margin-top:10px;">
+                    <div id="userInfo" style="display: contents;">{{ message}}</div>
+                </div>
+                <div class="container" style="margin-top:10px;">
+                    <div class="col-sm-2">
+                        <button type="submit">Registrieren</button>
+                    </div>
+                </div>
             </form>
+            </div>
         </div>
 
-        <div class="col-sm-2" style="background-color:yellow;">
-            <div style="height: 64px;"></div>
-            <button type="button" onclick="window.location.href = 'restaurant/registrieren';">Registrieren</button>  
-            <div style="height: 1px;"></div>  
-        </div>
+        
     </body>    
 </html>
