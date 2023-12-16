@@ -36,6 +36,13 @@ def createTB_Bestellung():
     cur.close()
     con.close()
 
+def createTB_Bestellt_Items():
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    cur.execute("CREATE TABLE 'bestellt' ('bestell_id' INTEGER, 'itemId' INTEGER, 'anzahl' INTEGER, FOREIGN KEY (bestell_id) references bestellung(bestell_id), FOREIGN KEY (itemId) references items(itemId))") ;   
+    cur.close()
+    con.close()
+
 def createTB_Speisekarte():
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
@@ -48,7 +55,7 @@ def createTB_Speisekarte():
 def createTB_OpeningTimes():
     con = sqlite3.connect('Database.db')
     cur = con.cursor()
-    cur.execute("CREATE TABLE 'openingTimes'('id' INTEGER PRIMARY KEY AUTOINCREMENT,'restaurant_id' INTEGER, 'day' TEXT, 'fromTime' TEXT,'toTime' TEXT, FOREIGN KEY(restaurant_id) REFERENCES restaurant(restaurantId))")
+    cur.execute("CREATE TABLE 'openingTimes'('id' INTEGER PRIMARY KEY AUTOINCREMENT,'restaurant_id' INTEGER, 'day' TEXT, 'fromTime' Time,'toTime' Time, FOREIGN KEY(restaurant_id) REFERENCES restaurant(restaurantId))")
     cur.execute("")
 
 #fuegt in die Datenabnk alle Tabellen ein
@@ -59,6 +66,7 @@ def createTB_All():
     createTB_Bestellung()
     createTB_Speisekarte()
     createTB_OpeningTimes()
+    createTB_Bestellt_Items()
 
 def insertExampleData_All():
     #Kunde
@@ -159,10 +167,39 @@ def insertNewSpeisekarte(restaurantId):
 def addOpeningTimes(restaurantId, day, fromTime, toTime):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("INSERT INTO openingTimes(restaurant_id, day, fromTime, toTime) VALUES(?,?,?,?)", (restaurantId, day,fromTime,toTime))
+    cur.execute("INSERT INTO openingTimes(restaurant_id, day, fromTime, toTime) VALUES(?,?,?,?)", (restaurantId, day,str(fromTime),str(toTime)))
     cur.close()
     con.commit()
     con.close()
+def selectOpeningTimeGreaterThanFrom(restaurantId, day, fromTime):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    cur.execute("SELECT * FROM openingTimes WHERE restaurant_id =" + str(restaurantId) + " and day = '" +  day  + "' and fromTime < '" + str(fromTime) + "' and toTime >'" + str(fromTime) + "'");
+    result = cur.fetchone()
+    cur.close()
+    con.commit()
+    con.close()
+    return result;
+
+def selectOpeningTimesLessThanTo(restaurantId, day, toTime):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    cur.execute("SELECT * FROM openingTimes WHERE restaurant_id =" + str(restaurantId) + " and day = '" +  day  + "' and fromTime < '" + str(toTime) + "' and toTime > '" + str(toTime) + "'");
+    result = cur.fetchone()
+    cur.close()
+    con.commit()
+    con.close()
+    return result;
+
+def selectOpeningTimesIncludeOtherTimes(restaurantId, day, fromTime, toTime):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    cur.execute("SELECT * FROM openingTimes WHERE restaurant_id =" + str(restaurantId) + " and day = '" +  day  + "' and fromTime >= '" + str(fromTime) + "' and toTime <= '" + str(toTime) + "'");
+    result = cur.fetchone()
+    cur.close()
+    con.commit()
+    con.close()
+    return result;
 
 def getOpeningTimesForRestaurant(restaurantId):
     con = sqlite3.connect('Database.db')

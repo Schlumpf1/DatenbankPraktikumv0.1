@@ -10,7 +10,7 @@
     <title>Opening Times</title>
 </head>
 <body>
-    <div class="container">
+    <div class="container" >
         <form action="/restaurant/openingTime/add" method="post">
             <select type="text" name="day">
                 <option value="Montag">Montag</option>
@@ -22,12 +22,15 @@
                 <option value="Sonntag">Sonntag</option>
             </select>
             <label for="from">Von
-                <input type="text" name="from">
+                <input type="text" name="from" required>
             </label>
             <label for="to">Bis
-                <input type="text" name="to">
+                <input type="text" name="to" required>
             </label>
             <button type="submit">Speichern</button>
+            {% for error in errors%}
+            <p style="color: red;"><b>{{ error }}</b></p>
+            {% endfor %}    
         </form>
     </div>
     <div>
