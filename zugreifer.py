@@ -138,11 +138,30 @@ def existUsername(username):
     con.close()
     return zwischenspeicher
 
+def existsCustomersUsername(username):
+    con = sqlite3.connect('Database.db')
+    cur = con.cursor()
+    cur.execute("SELECT EXISTS (SELECT username FROM kunde WHERE username = '" + username + "')")
+    zwischenspeicher= cur.fetchone()[0]  
+    cur.close()
+    con.commit()
+    con.close()
+    return zwischenspeicher
 
 def checkLogindata(username, password):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
     cur.execute("SELECT password FROM restaurant WHERE username = '" +str(username)+"'")
+    zwischenspeicher = (cur.fetchone()[0] ==password)
+    cur.close()
+    con.commit()
+    con.close()
+    return zwischenspeicher
+
+def checkCustomerLoginData(username, password):
+    con = sqlite3.connect('Database.db')    
+    cur = con.cursor()
+    cur.execute("SELECT password FROM kunde WHERE username = '" + username +"'")
     zwischenspeicher = (cur.fetchone()[0] ==password)
     cur.close()
     con.commit()

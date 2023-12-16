@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"!>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <title>Restaurant LOGIN-PAGE</title>
+    </head>
+    <body>
+        <div class="col-sm-2"></div>
+        <div class="col-sm-6" style="background-color:yellow;">
+            <form action="/customer/login" method="post">
+                <h2>Kunden-Einloggen</h2>
+                <label for="username">Benutzername:</label>
+                <input type="text" id="username" name="username" required >
+        
+                <label for="password">Passwort:</label>
+                <input type="password" id="password" name="password" required>
+        
+                <button type="submit">Einloggen</button>
+            </form>
+        </div>
+
+        <div class="col-sm-2" style="background-color:yellow;">
+            <div style="height: 64px;"></div>
+            <button type="button" onclick="window.location.href = '/customer/registrieren';">Registrieren</button>  
+            <div style="height: 1px;"></div>  
+        </div>
+    </body>    
+</html>

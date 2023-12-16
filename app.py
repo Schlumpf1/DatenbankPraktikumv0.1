@@ -27,19 +27,27 @@ def home1():
 
 @app.route("/restaurant")
 def restaurant():
+    if(not 'username' in session):
+        return render_template('restaurant_login.html')
     return render_template('speisekarte.html', items=zugreifer.getItemsVonSpeisekarte(zugreifer.getSpeisekarte(session['username'])))
 
 @app.route("/restaurant/delete_Item/<int:itemId>", methods=['POST'])
 def delete_Item(itemId):
+    if(not 'username' in session):
+        return render_template('restaurant_login.html')
     zugreifer.removeItemFromSpeisekarte(itemId)
     return redirect("/restaurant")
 
 @app.route("/restaurant/newItem")
 def newItem():
+    if(not 'username' in session):
+        return render_template('restaurant_login.html')
     return render_template('newItem.html')
     
 @app.route("/restaurant/newItem/safe", methods=['POST'])
 def newItem_safe():
+    if(not 'username' in session):
+        return render_template('restaurant_login.html')
     username = session['username']
     itemName = request.form['itemname']
     itemPreis = request.form['itempreis']
@@ -53,6 +61,8 @@ def newItem_safe():
 
 @app.route("/restaurant/openingTime")
 def openingTime():
+    if(not 'username' in session):
+        return render_template('restaurant_login.html')
     list = zugreifer.getOpeningTimesForRestaurant(session['username'])
     mondaysList = []
     tuesdayList = []
@@ -88,6 +98,8 @@ def openingTime():
 
 @app.route("/restaurant/openingTime/add", methods=['POST'])
 def addOpeningTime():
+    if(not 'username' in session):
+        return render_template('restaurant_login.html')
     username  = session['username']
     day = request.form['day']
     fromTime = request.form['from']
@@ -173,6 +185,8 @@ def addOpeningTime():
 
 @app.route("/restaurant/openingTime/delete-day/<int:id>", methods=['POST'])
 def delete_day(id):
+    if(not 'username' in session):
+        return render_template('restaurant_login.html')
     zugreifer.deleteOpeningTimeWithId(id)
     return redirect("/restaurant/openingTime")
 
@@ -210,4 +224,52 @@ def restaurant_register():
             return jsonify(error='Username already exists!'), 402
     #Wenn Methode != POST, password != passwordControll
     return render_template('restaurant_register.html',message = "")
+
+@app.route("/customer/login", methods =['POST', 'GET'])
+def customer_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        #versuch login auszuführen
+        if zugreifer.existsCustomersUsername(username):
+            if zugreifer.checkCustomerLoginData(username,password):
+                session['username'] = username;
+                return redirect("/customer")
+            
+        
+    #elif request.method == 'GET':
+    return render_template('customer_login.html')
+
+@app.route("/customer/registrieren", methods =['POST', 'GET'])
+def customer_register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        passwordControll = request.form['passwordControll']
+        firstName = request.form['firstName']
+        lastName = request.form['lastName']
+        street = request.form['street']
+        houseNumber = request.form['houseNumber']
+        plz = request.form['plz']
+        if password == passwordControll:
+            #usernamedopplung pruefen
+            print(zugreifer.existsCustomersUsername(username))
+            if zugreifer.existsCustomersUsername(username) == 0:
+                zugreifer.insertNewKunde(username, password,firstName, lastName, street + ' ' + houseNumber,plz)
+                return redirect('/customer')
+            else:
+                return render_template('customer_register.html',message="Benutzername schon vergeben!")
+        else:
+            return render_template('customer_register.html',message="Beide Passworts sollen gleich sein!")
+    #Wenn Methode != POST, password != passwordControll
+    return render_template('customer_register.html',message = "")
+
+
+@app.route("/customer")
+def customer():
+    if(not 'username' in session):
+        return redirect('/customer/login')
+        
+    return render_template('customer.html', username = session['username']);
+
 
