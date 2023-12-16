@@ -1,4 +1,4 @@
-from flask import Flask, render_template, render_template, redirect, request, jsonify
+from flask import Flask, render_template, render_template, redirect, request, jsonify, session
 import zugreifer
 from module_openingTime import *
 import os
@@ -7,6 +7,9 @@ from datetime import datetime
 
 
 app = Flask(__name__)
+app.secret_key = 'BAD_SECRET_KEY'
+
+
 @app.route("/")
 def home():
     return render_template("startpage.html")
@@ -24,7 +27,7 @@ def home1():
 
 @app.route("/restaurant")
 def restaurant():
-    return render_template('speisekarte.html', items=zugreifer.getItemsVonSpeisekarte(zugreifer.getSpeisekarte(1)))
+    return render_template('speisekarte.html', items=zugreifer.getItemsVonSpeisekarte(zugreifer.getSpeisekarte(session['username'])))
 
 @app.route("/restaurant/delete_Item/<int:itemId>", methods=['POST'])
 def delete_Item(itemId):
@@ -37,20 +40,20 @@ def newItem():
     
 @app.route("/restaurant/newItem/safe", methods=['POST'])
 def newItem_safe():
-    restaurantId = int(1)
+    username = session['username']
     itemName = request.form['itemname']
     itemPreis = request.form['itempreis']
     itemBeschreibung = request.form['itembeschreibung']
     itemBild = request.form['itembild']
     print(itemBild)
-    speisekartenId = zugreifer.getSpeisekarte(restaurantId)
+    speisekartenId = zugreifer.getSpeisekarte(username)
     zugreifer.insertNewItem(speisekartenId,itemName,itemPreis,itemBeschreibung,"BILD")
     return redirect("/restaurant")
 
 
 @app.route("/restaurant/openingTime")
 def openingTime():
-    list = zugreifer.getOpeningTimesForRestaurant(1)
+    list = zugreifer.getOpeningTimesForRestaurant(session['username'])
     mondaysList = []
     tuesdayList = []
     wednesdayList = []
@@ -85,12 +88,12 @@ def openingTime():
 
 @app.route("/restaurant/openingTime/add", methods=['POST'])
 def addOpeningTime():
-    id  = 1
+    username  = session['username']
     day = request.form['day']
     fromTime = request.form['from']
     toTime = request.form['to']
     errors = [];
-    list = zugreifer.getOpeningTimesForRestaurant(1)
+    list = zugreifer.getOpeningTimesForRestaurant(username)
     mondaysList = []
     tuesdayList = []
     wednesdayList = []
@@ -143,11 +146,11 @@ def addOpeningTime():
     if(time_object_from > time_object_to):
         errors.append('Von soll kleiner als Bis sein')
 
-    res1 = zugreifer.selectOpeningTimeGreaterThanFrom(id, day, time_object_from)
+    res1 = zugreifer.selectOpeningTimeGreaterThanFrom(username, day, time_object_from)
     print(res1)
-    res2 = zugreifer.selectOpeningTimesLessThanTo(id, day, time_object_to)
+    res2 = zugreifer.selectOpeningTimesLessThanTo(username, day, time_object_to)
     print(res2)
-    res3 = zugreifer.selectOpeningTimesIncludeOtherTimes(id, day, time_object_from, time_object_to);
+    res3 = zugreifer.selectOpeningTimesIncludeOtherTimes(username, day, time_object_from, time_object_to);
     print(res3)
     if((res1 is not None) or (res2 is not None) or (res3 is not None)):
         errors.append("Die Zeiten dürfen sich nicht überlappen")
@@ -164,7 +167,7 @@ def addOpeningTime():
          saturdayList = saturdayList,
          sundayList = sundayList)     
     else:   
-        zugreifer.addOpeningTimes(1, day, time_object_from, time_object_to)
+        zugreifer.addOpeningTimes(username, day, time_object_from, time_object_to)
         return redirect('/restaurant/openingTime')
 
 
@@ -181,6 +184,7 @@ def restaurant_login():
         #versuch login auszuführen
         if zugreifer.existUsername(username):
             if zugreifer.checkLogindata(username,password):
+                session['username'] = username;
                 return redirect("/restaurant")
             
         

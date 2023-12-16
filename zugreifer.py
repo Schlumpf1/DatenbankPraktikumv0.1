@@ -46,7 +46,7 @@ def createTB_Bestellt_Items():
 def createTB_Speisekarte():
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("CREATE TABLE 'speisekarten'( 'speisekartenId' INTEGER PRIMARY KEY AUTOINCREMENT, 'restaurantId' INTEGER)")
+    cur.execute("CREATE TABLE 'speisekarten'( 'speisekartenId' INTEGER PRIMARY KEY AUTOINCREMENT, 'restaurant_username' Text, FOREIGN KEY (restaurant_username) references restaurant(username))")
     cur.close()
     con.close()
 
@@ -55,7 +55,7 @@ def createTB_Speisekarte():
 def createTB_OpeningTimes():
     con = sqlite3.connect('Database.db')
     cur = con.cursor()
-    cur.execute("CREATE TABLE 'openingTimes'('id' INTEGER PRIMARY KEY AUTOINCREMENT,'restaurant_id' INTEGER, 'day' TEXT, 'fromTime' Time,'toTime' Time, FOREIGN KEY(restaurant_id) REFERENCES restaurant(restaurantId))")
+    cur.execute("CREATE TABLE 'openingTimes'('id' INTEGER PRIMARY KEY AUTOINCREMENT,'restaurant_username' TEXT, 'day' TEXT, 'fromTime' Time,'toTime' Time, FOREIGN KEY(restaurant_username) REFERENCES restaurant(username))")
     cur.execute("")
 
 #fuegt in die Datenabnk alle Tabellen ein
@@ -72,8 +72,7 @@ def insertExampleData_All():
     #Kunde
     insertNewKunde("MusterUser","Musterpasswort","Max", "Mustermann", "Musterstrasse 5",47057)
     restaurantId = insertNewRestaurant("firstRestaurant", "xyz123", "Musterrestaurant", "Musterwald 5")
-    print("restaurantid",restaurantId)
-    speisekartenId = insertNewSpeisekarte(restaurantId)
+    speisekartenId = insertNewSpeisekarte("firstRestaurant")
     #speisekartenId = 1
     print("SpeisekartenId",speisekartenId)
     insertNewItem(speisekartenId,"Das beste Essen",0,"Nicht vorhandene Beschreibung",None)
@@ -150,12 +149,11 @@ def checkLogindata(username, password):
     con.close()
     return zwischenspeicher
 
-
 #fügt eine Speisekarte dem Restaurent hinzu
-def insertNewSpeisekarte(restaurantId):
+def insertNewSpeisekarte(username):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("INSERT INTO speisekarten (restaurantId) VALUES( "+str(restaurantId)+ ")")
+    cur.execute("INSERT INTO speisekarten (restaurant_username) VALUES( '"+ username + "')")
     zwischenspeicher = cur.lastrowid
     cur.close()
     con.commit()
@@ -164,47 +162,47 @@ def insertNewSpeisekarte(restaurantId):
     
 
 # ändert die Öffnungszeiten in der Datenbank zu Restaurent
-def addOpeningTimes(restaurantId, day, fromTime, toTime):
+def addOpeningTimes(username, day, fromTime, toTime):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("INSERT INTO openingTimes(restaurant_id, day, fromTime, toTime) VALUES(?,?,?,?)", (restaurantId, day,str(fromTime),str(toTime)))
+    cur.execute("INSERT INTO openingTimes(restaurant_username, day, fromTime, toTime) VALUES(?,?,?,?)", (username, day,str(fromTime),str(toTime)))
     cur.close()
     con.commit()
     con.close()
-def selectOpeningTimeGreaterThanFrom(restaurantId, day, fromTime):
+def selectOpeningTimeGreaterThanFrom(username, day, fromTime):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("SELECT * FROM openingTimes WHERE restaurant_id =" + str(restaurantId) + " and day = '" +  day  + "' and fromTime < '" + str(fromTime) + "' and toTime >'" + str(fromTime) + "'");
+    cur.execute("SELECT * FROM openingTimes WHERE restaurant_username = '" + username + "' and day = '" +  day  + "' and fromTime < '" + str(fromTime) + "' and toTime >'" + str(fromTime) + "'");
     result = cur.fetchone()
     cur.close()
     con.commit()
     con.close()
     return result;
 
-def selectOpeningTimesLessThanTo(restaurantId, day, toTime):
+def selectOpeningTimesLessThanTo(username, day, toTime):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("SELECT * FROM openingTimes WHERE restaurant_id =" + str(restaurantId) + " and day = '" +  day  + "' and fromTime < '" + str(toTime) + "' and toTime > '" + str(toTime) + "'");
+    cur.execute("SELECT * FROM openingTimes WHERE restaurant_username ='" + username + "' and day = '" +  day  + "' and fromTime < '" + str(toTime) + "' and toTime > '" + str(toTime) + "'");
     result = cur.fetchone()
     cur.close()
     con.commit()
     con.close()
     return result;
 
-def selectOpeningTimesIncludeOtherTimes(restaurantId, day, fromTime, toTime):
+def selectOpeningTimesIncludeOtherTimes(username, day, fromTime, toTime):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("SELECT * FROM openingTimes WHERE restaurant_id =" + str(restaurantId) + " and day = '" +  day  + "' and fromTime >= '" + str(fromTime) + "' and toTime <= '" + str(toTime) + "'");
+    cur.execute("SELECT * FROM openingTimes WHERE restaurant_username ='" + username + "' and day = '" +  day  + "' and fromTime >= '" + str(fromTime) + "' and toTime <= '" + str(toTime) + "'");
     result = cur.fetchone()
     cur.close()
     con.commit()
     con.close()
     return result;
 
-def getOpeningTimesForRestaurant(restaurantId):
+def getOpeningTimesForRestaurant(username):
     con = sqlite3.connect('Database.db')
     cur = con.cursor()
-    result = cur.execute("SELECT * FROM openingTimes WHERE restaurant_id=" + str(restaurantId) );  
+    result = cur.execute("SELECT * FROM openingTimes WHERE restaurant_username= '" +username + "'");  
     openingTimes = list()
     for x in result:
         openingTimes.append(OpeningTime(x[0], x[1], x[2], x[3], x[4]))
@@ -229,10 +227,10 @@ def changeBestellungStatus():
     con.close()
 
 #gibt alle Items von dem restaurant wieder
-def getSpeisekarte(restaurantId):
+def getSpeisekarte(username):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("SELECT restaurantId FROM speisekarten WHERE restaurantId= "+str(restaurantId))
+    cur.execute("SELECT speisekartenId FROM speisekarten WHERE restaurant_username= '" + username + "'")
     zwischenspeicher = cur.fetchone()[0]
     cur.close()
     con.close()
