@@ -147,8 +147,8 @@ def addOpeningTime():
         if(openingTime.day == 'Sonntag'):
             sundayList.append(openingTime)  
 
-    if(not re.match("\d\d:\d\d", toTime)):
-        errors.append("Bis soll das Format HH:MM haben")
+    if(not re.match("\d\d:\d\d", fromTime)):
+        errors.append("Von soll das Format HH:MM haben")
         return render_template('openingTime.html',
          errors=errors,
          mondaysList = mondaysList,
@@ -160,7 +160,7 @@ def addOpeningTime():
          sundayList = sundayList)  
 
     if(not re.match("\d\d:\d\d", toTime)):
-        errors.append("Von soll das Format HH:MM haben")
+        errors.append("Bis soll das Format HH:MM haben")
         return render_template('openingTime.html',
          errors=errors,
          mondaysList = mondaysList,
