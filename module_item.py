@@ -26,3 +26,6 @@ class item:
     def bild(self):
         return self.bild
     
+    def __str__(self) -> str:
+        return "Item: [" +str(self.itemId) +"]"+ self.name+ " , Preis: "+str(self.preis) +" €, SpeisekartenId: "+str(self.speisekartenId)
+    

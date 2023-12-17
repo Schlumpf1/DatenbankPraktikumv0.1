@@ -10,29 +10,31 @@
     </head>
     <body>
         <label >
-            <b>Ihre neue Speise:</b>
+            <b>Hier können sie ihre Speisekarte bearbeiten:</b>
         </label>
-        <div class="row">
-            <form action="{{ url_for('newItem_safe')}}" method=post >
+        <form action="{{ url_for('changeItem', item_id=item.itemId) }}" method=post >
+            <div class="row">
                 <div class="col-sm-1"></div>
                 <div class="col-sm-2">
                     <input type="file" name="itembild" placeholder="Bild">
                 </div>
                 <div class="col-sm-1"></div>
                 <div class="col-sm-1">
-                    <input type="text" name="itemname" placeholder="Speisename">
+                    <input type="text" name="itemname" value= "{{item.name}}" >
                 </div>
                 <div class="col-sm-1"></div>
                 <div class="col-sm-1">
-                    <input type="number" name="itempreis" placeholder="Preis [in €]">
+                    <input type="number" name="itempreis" value= "{{ item.preis}}">
                 </div>
                 <div class="col-sm-1"></div>
-                <div class="col-sm-1">
-                    <input type="text" name="itembeschreibung" placeholder="Beschreibung">
-                </div>
-                
                 <button class="col-sm-2" type="submit">Speichern</button>              
-                
-            </form>
+            </div>
+            <div class = "row">
+                <div class="col-sm-1"></div>
+                <div class="col-sm-10">
+                    <input type="text" name="itembeschreibung" placeholder="Beschreibung" value="{{item.beschreibung}}" style="width: 90%">
+                </div>
+            </div> 
+        </form>
     </body>
 </html>

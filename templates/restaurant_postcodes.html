@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <title>Postcodes of the Delivery area</title>
+</head>
+<body>
+    <div class = "row">
+        <h1 style="padding-top: 50px; padding-left: 50px;">In folgende Liefergebiete liefert ihr Restaurant</h1>
+    </div>
+    <ul class="list-group">
+        {% for postcodeitem in postcodes %}
+            <li class="list-group-item" style="list-style-type: none;">
+                <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-3">
+                        {{ postcodeitem.postcode }}
+                    </div>
+                    <div class="col-sm-2">
+                        {{ postcodeitem.postcodeId }} 
+                    </div>
+                    <div class="col-sm-3"> 
+                    </div>
+                    <div class="col-sm-3">
+                        <form action="{{ url_for('delete_Postcode',postcodeId =postcodeitem.postcodeId) }}" method=post >
+                            <input type=hidden name=postId_to_delete value="{{postcodeitem.postcodeId}}"  />
+                            <button type="submit">löschen</button>
+                          </form>
+                    </div>
+            </li>  
+        {% endfor %}  
+    </ul>
+    <div>
+        <div class="row-sm-20">
+            <form action="/restaurant" method="get">
+                <button type="submit">Zurück zur Homepage</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

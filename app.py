@@ -42,7 +42,7 @@ def delete_Item(itemId):
 def newItem():
     if(not 'username' in session):
         return render_template('restaurant_login.html')
-    return render_template('newItem.html')
+    return render_template('restaurant_newItem.html')
     
 @app.route("/restaurant/newItem/safe", methods=['POST'])
 def newItem_safe():
@@ -57,6 +57,24 @@ def newItem_safe():
     speisekartenId = zugreifer.getSpeisekarte(username)
     zugreifer.insertNewItem(speisekartenId,itemName,itemPreis,itemBeschreibung,"BILD")
     return redirect("/restaurant")
+
+@app.route("/restaurant/changeItem/<int:item_id>", methods=['POST','GET'])
+def changeItem(item_id: int):
+    if(not 'username' in session):
+        print(item_id)
+        return render_template('restaurant_login.html')
+    print(zugreifer.getItemById(item_id))
+    if request.method == 'POST':
+        username = session['username']
+        itemName = request.form['itemname']
+        itemPreis = request.form['itempreis']
+        itemBeschreibung = request.form['itembeschreibung']
+        itemBild = request.form['itembild']
+        zugreifer.changeItemById(item_id,itemName,itemPreis,itemBeschreibung)
+        print("changeItem(): Item(Id:"+str(item_id)+") changed")
+        return redirect("/restaurant")
+    else:
+        return render_template("restaurant_changeItem.html", item = zugreifer.getItemById(item_id))
 
 
 @app.route("/restaurant/openingTime")
@@ -217,13 +235,29 @@ def restaurant_register():
             #usernamedopplung pruefen
             if zugreifer.existUsername(username) ==False:
                 zugreifer.insertNewRestaurant(username, password, restaurantName, adresse)
+                zugreifer.insertNewSpeisekarte(username)
                 return redirect('/restaurant')
             else:
+                print("Register failed, Username already exists")
                 render_template('restaurant_register.html',message="Username already in use!")
         else:
             return jsonify(error='Username already exists!'), 402
     #Wenn Methode != POST, password != passwordControll
     return render_template('restaurant_register.html',message = "")
+
+@app.route("/restaurant/postcodes", methods =['POST', 'GET'])
+def restaurant_postcodes():
+    if(not 'username' in session):
+        return render_template('restaurant_login.html')
+    username = session['username']
+    return render_template("restaurant_postcodes.html" , postcodes= zugreifer.getPostcodesForRestaurant(username))
+
+@app.route("/restaurant/postcodes/delete_Postcode/<int:postcodeId>", methods=['POST'])
+def delete_Postcode(postcodeId):
+    if(not 'username' in session):
+        return render_template('restaurant_login.html')
+    zugreifer.deletePostcodeWithId(postcodeId)
+    return redirect("/restaurant/postcodes")
 
 @app.route("/customer/login", methods =['POST', 'GET'])
 def customer_login():

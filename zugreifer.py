@@ -1,6 +1,7 @@
 import sqlite3
 from module_item import *
 from module_openingTime import *
+from module_postcodeitem import *
 ####################
 ##____Methoden____##
 ####################
@@ -56,7 +57,16 @@ def createTB_OpeningTimes():
     con = sqlite3.connect('Database.db')
     cur = con.cursor()
     cur.execute("CREATE TABLE 'openingTimes'('id' INTEGER PRIMARY KEY AUTOINCREMENT,'restaurant_username' TEXT, 'day' TEXT, 'fromTime' Time,'toTime' Time, FOREIGN KEY(restaurant_username) REFERENCES restaurant(username))")
-    cur.execute("")
+    cur.close()
+    con.close()
+
+def createTB_Postcode():
+    con = sqlite3.connect('Database.db')
+    cur = con.cursor()
+    cur.execute("CREATE TABLE 'postcodes'('id' INTEGER PRIMARY KEY AUTOINCREMENT,'restaurant_username' TEXT, postcode INTEGER, FOREIGN KEY(restaurant_username) REFERENCES restaurant(username))")
+    cur.close()
+    con.close()
+
 
 #fuegt in die Datenabnk alle Tabellen ein
 def createTB_All():
@@ -67,6 +77,7 @@ def createTB_All():
     createTB_Speisekarte()
     createTB_OpeningTimes()
     createTB_Bestellt_Items()
+    createTB_Postcode()
 
 def insertExampleData_All():
     #Kunde
@@ -79,6 +90,12 @@ def insertExampleData_All():
     insertNewItem(speisekartenId,"Das beste Essen1",0,"Nicht vorhandene Beschreibung",None)
     insertNewItem(speisekartenId,"Das beste Essen2",0,"Nicht vorhandene Beschreibung",None)
     insertNewItem(speisekartenId,"Das beste Essen3",0,"Nicht vorhandene Beschreibung",None)
+    addPostcode(12345,"firstRestaurant")
+    addPostcode(12346,"firstRestaurant")
+    addPostcode(12347,"firstRestaurant")
+    addPostcode(12348,"firstRestaurant")
+    addOpeningTimes("firstRestaurant", "Montag",12,14)
+    addOpeningTimes("firstRestaurant", "Montag",15,16)
     
 #
 #Kundenaccountverwaltungsmethoden
@@ -94,6 +111,7 @@ def insertNewKunde(username, password,vorname,nachname,adresse,postleitzahl):
     cur.close()
     con.commit()
     con.close()
+    print("Inserted new Customer with the username "+username)
     return zwischenspeicher
 
 #eine Bestellung soll aufgegeben werden
@@ -116,7 +134,7 @@ def bestellungVorhanden():
 #restaurantaccountverwaltungsmethoden
 #
 
-#fügt neues restaurant in die Datenbank ein
+#fügt neues Restaurant in die Datenbank ein
 def insertNewRestaurant(username, password, name, adresse):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
@@ -126,6 +144,7 @@ def insertNewRestaurant(username, password, name, adresse):
     cur.close()
     con.commit()
     con.close()
+    print("Inserted new Restaurant with the username "+username)
     return zwischenspeicher
 
 def existUsername(username):
@@ -136,6 +155,7 @@ def existUsername(username):
     cur.close()
     con.commit()
     con.close()
+    print("Request if Restaurant username "+username+" already exists: "+str(zwischenspeicher))
     return zwischenspeicher
 
 def existsCustomersUsername(username):
@@ -146,6 +166,7 @@ def existsCustomersUsername(username):
     cur.close()
     con.commit()
     con.close()
+    print("Request if Customer username "+username+" already exists: "+str(zwischenspeicher))
     return zwischenspeicher
 
 def checkLogindata(username, password):
@@ -156,6 +177,7 @@ def checkLogindata(username, password):
     cur.close()
     con.commit()
     con.close()
+    print("checkLoginData for Restaurant username: "+username +" password: "+password + "Sucess: "+str(zwischenspeicher))
     return zwischenspeicher
 
 def checkCustomerLoginData(username, password):
@@ -166,6 +188,7 @@ def checkCustomerLoginData(username, password):
     cur.close()
     con.commit()
     con.close()
+    print("checkLoginData for Customer username: "+username +" password: "+password + "Sucess: "+str(zwischenspeicher))
     return zwischenspeicher
 
 #fügt eine Speisekarte dem Restaurent hinzu
@@ -177,6 +200,7 @@ def insertNewSpeisekarte(username):
     cur.close()
     con.commit()
     con.close()
+    print("New Speisekarte for the restaurant with username: "+username )
     return zwischenspeicher
     
 
@@ -188,6 +212,8 @@ def addOpeningTimes(username, day, fromTime, toTime):
     cur.close()
     con.commit()
     con.close()
+    print("Inserted OpeningTimes for the restaurant with username: "+username)
+    
 def selectOpeningTimeGreaterThanFrom(username, day, fromTime):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
@@ -227,6 +253,7 @@ def getOpeningTimesForRestaurant(username):
         openingTimes.append(OpeningTime(x[0], x[1], x[2], x[3], x[4]))
     cur.close()
     con.close()
+    print("Found "+str(len(openingTimes)) +" openingtime(s) for restaurant with username: "+ username )
     return openingTimes
 
 def deleteOpeningTimeWithId(id):
@@ -236,6 +263,38 @@ def deleteOpeningTimeWithId(id):
     cur.close()
     con.commit()
     con.close()
+    print("Deletion of one openingtime")
+    
+def addPostcode(postcode, restaurant_username):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    cur.execute("INSERT INTO postcodes(restaurant_username, postcode) VALUES(?,?)", (restaurant_username,str(postcode)))
+    cur.close()
+    con.commit()
+    con.close()
+    print("Inserted Poctcode( "+str(postcode) +" for the restaurant with username: "+restaurant_username)
+
+
+def getPostcodesForRestaurant(restaurant_username):
+    con = sqlite3.connect('Database.db')
+    cur = con.cursor()
+    result = cur.execute("SELECT * FROM postcodes WHERE restaurant_username= '" +restaurant_username + "'");  
+    postcodes = list()
+    for x in result:
+        postcodes.append(postcodeitem(x[0], x[1], x[2]))
+    cur.close()
+    con.close()
+    print("Found "+str(len(postcodes)) +" postcode(s) for restaurant with username: "+ restaurant_username)
+    return postcodes
+
+def deletePostcodeWithId(postcodeId):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    cur.execute("DELETE FROM postcodes WHERE id = "+str(postcodeId))
+    cur.close()
+    con.commit()
+    con.close()
+    print("Deletion of one postcode( "+str(postcodeId) +")")
 
 #vorallem für das an- & ablehnen gedacht
 def changeBestellungStatus():
@@ -244,6 +303,7 @@ def changeBestellungStatus():
     cur.close()
     con.commit()
     con.close()
+    print("Bestellung changed")
 
 #gibt alle Items von dem restaurant wieder
 def getSpeisekarte(username):
@@ -253,7 +313,32 @@ def getSpeisekarte(username):
     zwischenspeicher = cur.fetchone()[0]
     cur.close()
     con.close()
+    print("Speisekarte from restaurant_username: "+ username +" requested")
     return zwischenspeicher
+
+def getItemById(itemId):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    zwischenspeicher = cur.execute("SELECT * FROM items WHERE itemId= "+str(itemId))
+    itemlist = list()
+    for x in zwischenspeicher:
+        itemlist.append(item(x[0],x[1],x[2],x[3],x[4],x[5]))
+        localItem = itemlist[0]
+    cur.close()
+    con.close()
+    print("GetItemById response with: "+ str(localItem))
+    return localItem
+#Speisekartenid zuveraendern macht hier keinen Sinn, da jedes Restaurant nur eine Speisekarte hat
+def changeItemById(itemId, itemname, itempreis, itembeschreibung):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    print("UPDATE items SET name = '"+itemname+ "' , preis = '"+str(itempreis) +"', beschreibung = '"+itembeschreibung +"' WHERE itemId ='"+str(itemId)+"'")
+    cur.execute("UPDATE items SET name = '"+itemname+ "' , preis = '"+str(itempreis) +"', beschreibung = '"+itembeschreibung +"' WHERE itemId ='"+str(itemId)+"'")
+    cur.close()
+    con.commit()
+    con.close()
+    print("Item(Id: "+str(itemId)+") was changed [SQL:UPDATED]")
+    
 
 
 def getItemsVonSpeisekarte(speisekartenId):
@@ -267,6 +352,7 @@ def getItemsVonSpeisekarte(speisekartenId):
         itemlist.append(item(x[0],x[1],x[2],x[3],x[4],x[5]))
     cur.close()
     con.close()
+    print("Items (list.size= "+ str(len(itemlist))+") from Speisekarte "+ str(speisekartenId) +" requested")
     return itemlist
 #    return [item(1,"Apfel","2,70","keine Beschreibung", "Kein Bild"), item(2,"Birne","2,80","keine Beschreibung", "Kein Bild")]
 
@@ -277,10 +363,10 @@ def insertNewItem(speisekartenId, name, preis, beschreibung, bild):
     item = (speisekartenId ,name ,preis ,beschreibung)
     print(item)
     cur.execute("INSERT INTO items (speisekartenId, name, preis, beschreibung) VALUES( ? , ? , ? , ? )", item)  
-    
     cur.close()
     con.commit()
     con.close()
+    print("New Item inserted (name: "+name +")")
     
 #so sollen nicht mehr zu verkaufstehende Items wieder gelöscht werden
 def removeItemFromSpeisekarte(itemId):
@@ -290,7 +376,7 @@ def removeItemFromSpeisekarte(itemId):
     cur.close()
     con.commit()
     con.close()
-
+    print("Removed Item")
 
 
 #

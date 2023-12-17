@@ -12,16 +12,13 @@
         <div class="container">
             <h1 style="color:blue;">Ihr Restaurant bei Lieferspatz!</h1>
             <!--Liste der Items auf der Speisekarte-->
-            
                 <div class="h-25 col-sm-9" style="background-color:yellow;">
-                   
                     <div class="row" style="height: 50px; padding-top: 10px;"> 
                         <div class="col-sm-1"></div>   
                         <div class ="h-25 col-sm-7">Speisekarte</div>
                         <button type="button" class="h-25 col-sm-3 btn" onclick="window.location.href = 'restaurant/newItem';">Neue Speise</button>
                         <div class="col-sm-1"></div>
                     </div>    
-                    
                     <ul class="list-group">
                         <!--vielleicht bietet sich es mehr an href bei bearbeiten & löschen zu benutzen-->
                         {% for item in items %}
@@ -38,15 +35,16 @@
                                         <form action="{{ url_for('delete_Item',itemId =item.itemId) }}" method=post >
                                             <input type=hidden name=itemId_to_delete value="{{item.itemId}}"  />
                                             <button type="submit">löschen</button>
-                                          </form>
-                                        
+                                          </form>   
                                     </div>
                                     <div class="col-sm-3">
-                                        <button target="popup" onclick="window.open('', 'popup', 'width=580,height=360,scrollbars=no, toolbar=yes,status=no, resizable=yes,menubar=yes,location=yes,directories=no,top=50,left=50')"href="newItem.html">Bearbeiten</button>
-                                        
+                                        <a href="{{ url_for('changeItem', item_id=item.itemId) }}">bearbeiten</a>
                                     </div>
-
-                                    
+                                </div>
+                                <div class="row" style="background-color: lightcyan;">
+                                    <div class="col-sm-1"></div>
+                                    Beschreibung: {{ item.beschreibung }}
+                                </div>  
                             </li>  
                         {% endfor %}  
                     </ul>
@@ -58,10 +56,9 @@
                         <li><a role="menuitem" tabindex="-1" href="#">Archiv</a></li>
                         <li class="list-group-item" style="list-style-type: none; background-color:transparent; border-color: transparent;" ></li>
                         <li><a role="menuitem" tabindex="-1" href="/restaurant/openingTime">Öffnungszeiten</a></li>
-                        <li><a role="menuitem" tabindex="-1" href="#">Liefergebiet bearbeiten</a></li>
+                        <li><a role="menuitem" tabindex="-1" href="/restaurant/postcodes">Liefergebiet bearbeiten</a></li>
                     </ul>
                 </div>
-            
              <!--
             <div class="row">
                 
@@ -72,7 +69,6 @@
             //-->
         </div>  
         </body>
-    
     </html>
 <!--
 
