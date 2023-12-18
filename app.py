@@ -31,6 +31,13 @@ def restaurant():
         return render_template('restaurant_login.html')
     return render_template('speisekarte.html', items=zugreifer.getItemsVonSpeisekarte(zugreifer.getSpeisekarte(session['username'])))
 
+@app.route("/restaurant/logout")
+def logout():
+    session.clear()
+    return render_template('startpage.html')
+
+
+
 @app.route("/restaurant/delete_Item/<int:itemId>", methods=['POST'])
 def delete_Item(itemId):
     if(not 'username' in session):
@@ -218,7 +225,9 @@ def restaurant_login():
             if zugreifer.checkLogindata(username,password):
                 session['username'] = username;
                 return redirect("/restaurant")
-            
+            else:
+                message = "Benutzername oder Passwort ist falsch. Bitte versuchen Sie erneut."
+                return render_template('restaurant_login.html', message = message)
         
     #elif request.method == 'GET':
     return render_template('restaurant_login.html')
