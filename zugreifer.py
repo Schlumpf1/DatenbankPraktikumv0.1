@@ -33,7 +33,7 @@ def createTB_Item():
 def createTB_Bestellung():
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("CREATE TABLE 'bestellung' ('bestell_id' INTEGER PRIMARY KEY AUTOINCREMENT,'status' TEXT, 'eingangsTag' INTEGER, 'eingangsUhrzeit' INTEGER, 'zusatztext' TEXT, 'restaurant_username' TEXT, 'customer_username' TEXT, FOREIGN KEY (restaurant_username) references restaurant(username), FOREIGN KEY (customer_username) references kunde(username))")    
+    cur.execute("CREATE TABLE 'bestellung' ('bestell_id' INTEGER PRIMARY KEY AUTOINCREMENT,'status' TEXT, 'eingangsTag' DATE, 'eingangsUhrzeit' TIME, 'zusatztext' TEXT, 'restaurant_username' TEXT, 'customer_username' TEXT, FOREIGN KEY (restaurant_username) references restaurant(username), FOREIGN KEY (customer_username) references kunde(username))")    
     cur.close()
     con.close()
 
