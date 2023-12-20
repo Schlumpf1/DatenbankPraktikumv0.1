@@ -11,6 +11,30 @@
     <body>
         <h1>Bestellungen</h1>
         <hr><br>
+        <h3>Neue Bestellungen</h3>
+        <div class="container">
+            <ul>
+                {%for newOrder in newOrders%}
+                <li class="list-group-item" style="list-style-type: none;">
+                    <div class="row">
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-3">
+                            Bestellung {{ newOrder.orderId }} 
+                        </div>
+                        <div class="col-sm-3">
+                            {{ newOrder.status }} - {{ newOrder.date }} - {{ newOrder.time }}
+                        </div>
+                        <div class="col-sm-3">
+                            <form action="{{ url_for('customerOrderDetails',orderId = newOrder.orderId) }}" method=post >
+                                <input type=hidden name=order_details value="{{newOrder.id}}"  />
+                                <button type="submit">Details</button>
+                            </form>   
+                        </div>
+                </li>  
+                {% endfor %}
+            </ul>
+        </div>
+        <hr><br>
         <h3>Laufende Bestellungen</h3>
         <div class="container">
             <ul>

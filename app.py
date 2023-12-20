@@ -69,10 +69,11 @@ def customerOrders():
     if(not 'customer_username' in session):
         return render_template('customer_login.html')
     username = session['customer_username'] 
+    newOrders = zugreifer.getNewOrdersForCustomer(username)
     pendingOrders = zugreifer.getPendingOrdersForCustomer(username)
     finishedOrders = zugreifer.getFinishedOrdersForCustomer(username)
     canceledOrders = zugreifer.getCanceledOrdersForCustomer(username)
-    return render_template('customer_orders.html', pendingOrders = pendingOrders, finishedOrders = finishedOrders, canceledOrders = canceledOrders)   
+    return render_template('customer_orders.html', newOrders = newOrders, pendingOrders = pendingOrders, finishedOrders = finishedOrders, canceledOrders = canceledOrders)   
 
 @app.route('/customer/order_details/<int:orderId>', methods=['POST'])
 def customerOrderDetails(orderId):

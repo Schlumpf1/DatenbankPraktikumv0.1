@@ -99,24 +99,24 @@ def insertExampleData_All():
     addPostcode(12348,"firstRestaurant")
     addOpeningTimes("firstRestaurant", "Montag",12,14)
     addOpeningTimes("firstRestaurant", "Montag",15,16)
-    addNewBestellung('Neu', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('Neu', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser2')
-    addNewBestellung('Neu', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1')
     addNewBestellung('In Bearbeitung', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
     addNewBestellung('In Bearbeitung', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser2')
     addNewBestellung('In Bearbeitung', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1')
-    addNewBestellung('Fertig', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('Fertig', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser2')
-    addNewBestellung('Fertig', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1')
+    addNewBestellung('In Zubereitung', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('In Zubereitung', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser2')
+    addNewBestellung('In Zubereitung', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1')
+    addNewBestellung('Abgeschlossen', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('Abgeschlossen', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser2')
+    addNewBestellung('Abgeschlossen', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1')
     addNewBestellung('Storniert', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser');
     addNewBestellung('Storniert', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser2');
     addNewBestellung('Storniert', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1');
-    addNewBestellung('Neu', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('Neu', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('In Zubereitung', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('In Zubereitung', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser')
     addNewBestellung('In Bearbeitung', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
     addNewBestellung('In Bearbeitung', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('Fertig', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('Fertig', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('Abgeschlossen', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('Abgeschlossen', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser')
     addNewBestellung('Storniert', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser');
     addNewBestellung('Storniert', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser');
 #Kundenaccountverwaltungsmethoden
@@ -329,7 +329,7 @@ def addNewBestellung (status, eingangsTag, eingangsUhrzeit, zusatztext, restaura
 def getNewOrdersForRestaurant(username):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()    
-    result = cur.execute("SELECT * FROM bestellung where restaurant_username='" + username + "' and status='Neu' order by eingangsTag asc , eingangsUhrzeit asc;");
+    result = cur.execute("SELECT * FROM bestellung where restaurant_username='" + username + "' and status='In Bearbeitung' order by eingangsTag asc , eingangsUhrzeit asc;");
     newOrders = list()
     for x in result:
         newOrders.append(order(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
@@ -341,7 +341,7 @@ def getNewOrdersForRestaurant(username):
 def getPendingOrdersForRestaurant(username):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()    
-    result = cur.execute("SELECT * FROM bestellung where restaurant_username='" + username + "' and status='In Bearbeitung' order by eingangsTag asc , eingangsUhrzeit asc;");
+    result = cur.execute("SELECT * FROM bestellung where restaurant_username='" + username + "' and status='In Zubereitung' order by eingangsTag asc , eingangsUhrzeit asc;");
     pendingOrders = list()
     for x in result:
         pendingOrders.append(order(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
@@ -353,7 +353,7 @@ def getPendingOrdersForRestaurant(username):
 def getFinishedOrdersForRestaurant(username):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()    
-    result = cur.execute("SELECT * FROM bestellung where restaurant_username='" + username + "' and status='Fertig' order by eingangsTag asc , eingangsUhrzeit asc;");
+    result = cur.execute("SELECT * FROM bestellung where restaurant_username='" + username + "' and status='Abgeschlossen' order by eingangsTag asc , eingangsUhrzeit asc;");
     finishedOrders = list()
     for x in result:
         finishedOrders.append(order(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
@@ -373,11 +373,23 @@ def getCanceledOrdersForRestaurant(username):
     con.close()
     return canceledOrders;  
 
+# get new orders for customer
+def getNewOrdersForCustomer(username):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()    
+    result = cur.execute("SELECT * FROM bestellung where customer_username='" + username + "' and status='In Bearbeitung' order by eingangsTag asc , eingangsUhrzeit asc;");
+    newOrders = list()
+    for x in result:
+        newOrders.append(order(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
+    cur.close()
+    con.close()
+    return newOrders;
+
 # get pending orders for customer
 def getPendingOrdersForCustomer(username):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()    
-    result = cur.execute("SELECT * FROM bestellung where customer_username='" + username + "' and status='In Bearbeitung' order by eingangsTag asc , eingangsUhrzeit asc;");
+    result = cur.execute("SELECT * FROM bestellung where customer_username='" + username + "' and status='In Zubereitung' order by eingangsTag asc , eingangsUhrzeit asc;");
     pendingOrders = list()
     for x in result:
         pendingOrders.append(order(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
@@ -389,7 +401,7 @@ def getPendingOrdersForCustomer(username):
 def getFinishedOrdersForCustomer(username):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()    
-    result = cur.execute("SELECT * FROM bestellung where customer_username='" + username + "' and status='Fertig' order by eingangsTag asc , eingangsUhrzeit asc;");
+    result = cur.execute("SELECT * FROM bestellung where customer_username='" + username + "' and status='Abgeschlossen' order by eingangsTag asc , eingangsUhrzeit asc;");
     finishedOrders = list()
     for x in result:
         finishedOrders.append(order(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
