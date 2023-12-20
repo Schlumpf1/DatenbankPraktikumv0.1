@@ -19,6 +19,7 @@ def initTables():
     os.remove("Database.db")
     zugreifer.createTB_All()
     zugreifer.insertExampleData_All()
+    session.clear()
     return redirect("/restaurant")
 
 @app.route("/home")
@@ -27,35 +28,75 @@ def home1():
 
 @app.route("/restaurant")
 def restaurant():
-    if(not 'username' in session):
+    if(not 'restaurant_username' in session):
         return render_template('restaurant_login.html')
-    return render_template('speisekarte.html', items=zugreifer.getItemsVonSpeisekarte(zugreifer.getSpeisekarte(session['username'])))
+    return render_template('speisekarte.html', items=zugreifer.getItemsVonSpeisekarte(zugreifer.getSpeisekarte(session['restaurant_username'])))
 
 @app.route("/restaurant/logout")
 def logout():
     session.clear()
     return render_template('startpage.html')
 
+@app.route('/restaurant/bestellungen/neu')
+def newOrders():
+    if(not 'restaurant_username' in session):
+        return render_template('restaurant_login.html')
+    username = session['restaurant_username']
+    newOrders = zugreifer.getNewOrdersForRestaurant(username)
+    return render_template('restaurant_new_orders.html', newOrders = newOrders)
+
+
+@app.route('/restaurant/new_order_details/<int:orderId>', methods=['POST'])
+def newOrderDetails():
+    return render_template('restaurant_new_order_details.html')
+
+@app.route('/restaurant/order_details/<int:orderId>', methods=['POST'])
+def restaurantOrderDetails(orderId):
+    return render_template('restaurant_order_details.html', orderId = orderId)
+
+@app.route('/restaurant/bestellungen')
+def restaurantOrders():
+    if(not 'restaurant_username' in session):
+        return render_template('restaurant_login.html')
+    username = session['restaurant_username']
+    pendingOrders = zugreifer.getPendingOrdersForRestaurant(username)
+    finishedOrders = zugreifer.getFinishedOrdersForRestaurant(username)
+    canceledOrders = zugreifer.getCanceledOrdersForRestaurant(username)
+    return render_template('restaurant_orders.html', pendingOrders = pendingOrders, finishedOrders = finishedOrders, canceledOrders = canceledOrders)    
+
+@app.route("/customer/bestellungen")
+def customerOrders():
+    if(not 'customer_username' in session):
+        return render_template('customer_login.html')
+    username = session['customer_username'] 
+    pendingOrders = zugreifer.getPendingOrdersForCustomer(username)
+    finishedOrders = zugreifer.getFinishedOrdersForCustomer(username)
+    canceledOrders = zugreifer.getCanceledOrdersForCustomer(username)
+    return render_template('customer_orders.html', pendingOrders = pendingOrders, finishedOrders = finishedOrders, canceledOrders = canceledOrders)   
+
+@app.route('/customer/order_details/<int:orderId>', methods=['POST'])
+def customerOrderDetails(orderId):
+    return render_template('customer_order_details.html', orderId = orderId)
 
 
 @app.route("/restaurant/delete_Item/<int:itemId>", methods=['POST'])
 def delete_Item(itemId):
-    if(not 'username' in session):
+    if(not 'restaurant_username' in session):
         return render_template('restaurant_login.html')
     zugreifer.removeItemFromSpeisekarte(itemId)
     return redirect("/restaurant")
 
 @app.route("/restaurant/newItem")
 def newItem():
-    if(not 'username' in session):
+    if(not 'restaurant_username' in session):
         return render_template('restaurant_login.html')
     return render_template('restaurant_newItem.html')
     
 @app.route("/restaurant/newItem/safe", methods=['POST'])
 def newItem_safe():
-    if(not 'username' in session):
+    if(not 'restaurant_username' in session):
         return render_template('restaurant_login.html')
-    username = session['username']
+    username = session['restaurant_username']
     itemName = request.form['itemname']
     itemPreis = request.form['itempreis']
     itemBeschreibung = request.form['itembeschreibung']
@@ -67,12 +108,12 @@ def newItem_safe():
 
 @app.route("/restaurant/changeItem/<int:item_id>", methods=['POST','GET'])
 def changeItem(item_id: int):
-    if(not 'username' in session):
+    if(not 'restaurant_username' in session):
         print(item_id)
         return render_template('restaurant_login.html')
     print(zugreifer.getItemById(item_id))
     if request.method == 'POST':
-        username = session['username']
+        username = session['restaurant_username']
         itemName = request.form['itemname']
         itemPreis = request.form['itempreis']
         itemBeschreibung = request.form['itembeschreibung']
@@ -86,9 +127,9 @@ def changeItem(item_id: int):
 
 @app.route("/restaurant/openingTime")
 def openingTime():
-    if(not 'username' in session):
+    if(not 'restaurant_username' in session):
         return render_template('restaurant_login.html')
-    list = zugreifer.getOpeningTimesForRestaurant(session['username'])
+    list = zugreifer.getOpeningTimesForRestaurant(session['restaurant_username'])
     mondaysList = []
     tuesdayList = []
     wednesdayList = []
@@ -123,7 +164,7 @@ def openingTime():
 
 @app.route("/restaurant/openingTime/add", methods=['POST'])
 def addOpeningTime():
-    if(not 'username' in session):
+    if(not 'restaurant_username' in session):
         return render_template('restaurant_login.html')
     username  = session['username']
     day = request.form['day']
@@ -184,14 +225,11 @@ def addOpeningTime():
         errors.append('Von soll kleiner als Bis sein')
 
     res1 = zugreifer.selectOpeningTimeGreaterThanFrom(username, day, time_object_from)
-    print(res1)
     res2 = zugreifer.selectOpeningTimesLessThanTo(username, day, time_object_to)
-    print(res2)
     res3 = zugreifer.selectOpeningTimesIncludeOtherTimes(username, day, time_object_from, time_object_to);
-    print(res3)
+
     if((res1 is not None) or (res2 is not None) or (res3 is not None)):
         errors.append("Die Zeiten dürfen sich nicht überlappen")
-
     
     if(len(errors) > 0):
         return render_template('openingTime.html',
@@ -210,7 +248,7 @@ def addOpeningTime():
 
 @app.route("/restaurant/openingTime/delete-day/<int:id>", methods=['POST'])
 def delete_day(id):
-    if(not 'username' in session):
+    if(not 'restaurant_username' in session):
         return render_template('restaurant_login.html')
     zugreifer.deleteOpeningTimeWithId(id)
     return redirect("/restaurant/openingTime")
@@ -223,7 +261,7 @@ def restaurant_login():
         #versuch login auszuführen
         if zugreifer.existUsername(username):
             if zugreifer.checkLogindata(username,password):
-                session['username'] = username;
+                session['restaurant_username'] = username;
                 return redirect("/restaurant")
             else:
                 message = "Benutzername oder Passwort ist falsch. Bitte versuchen Sie erneut."
@@ -245,6 +283,7 @@ def restaurant_register():
             if zugreifer.existUsername(username) ==False:
                 zugreifer.insertNewRestaurant(username, password, restaurantName, adresse)
                 zugreifer.insertNewSpeisekarte(username)
+                session['restaurant_username'] = username
                 return redirect('/restaurant')
             else:
                 print("Register failed, Username already exists")
@@ -256,14 +295,14 @@ def restaurant_register():
 
 @app.route("/restaurant/postcodes", methods =['POST', 'GET'])
 def restaurant_postcodes():
-    if(not 'username' in session):
+    if(not 'restaurant_username' in session):
         return render_template('restaurant_login.html')
-    username = session['username']
+    username = session['restaurant_username']
     return render_template("restaurant_postcodes.html" , postcodes= zugreifer.getPostcodesForRestaurant(username))
 
 @app.route("/restaurant/postcodes/delete_Postcode/<int:postcodeId>", methods=['POST'])
 def delete_Postcode(postcodeId):
-    if(not 'username' in session):
+    if(not 'restaurant_username' in session):
         return render_template('restaurant_login.html')
     zugreifer.deletePostcodeWithId(postcodeId)
     return redirect("/restaurant/postcodes")
@@ -276,7 +315,7 @@ def customer_login():
         #versuch login auszuführen
         if zugreifer.existsCustomersUsername(username):
             if zugreifer.checkCustomerLoginData(username,password):
-                session['username'] = username;
+                session['customer_username'] = username;
                 return redirect("/customer")
             
         
@@ -299,6 +338,7 @@ def customer_register():
             print(zugreifer.existsCustomersUsername(username))
             if zugreifer.existsCustomersUsername(username) == 0:
                 zugreifer.insertNewKunde(username, password,firstName, lastName, street + ' ' + houseNumber,plz)
+                session['customer_username'] = username
                 return redirect('/customer')
             else:
                 return render_template('customer_register.html',message="Benutzername schon vergeben!")
@@ -310,9 +350,9 @@ def customer_register():
 
 @app.route("/customer")
 def customer():
-    if(not 'username' in session):
+    if(not 'customer_username' in session):
         return redirect('/customer/login')
         
-    return render_template('customer.html', username = session['username']);
+    return render_template('customer.html', username = session['customer_username']);
 
 

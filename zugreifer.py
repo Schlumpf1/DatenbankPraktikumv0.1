@@ -2,6 +2,7 @@ import sqlite3
 from module_item import *
 from module_openingTime import *
 from module_postcodeitem import *
+from module_order import *
 ####################
 ##____Methoden____##
 ####################
@@ -82,6 +83,8 @@ def createTB_All():
 def insertExampleData_All():
     #Kunde
     insertNewKunde("MusterUser","Musterpasswort","Max", "Mustermann", "Musterstrasse 5",47057)
+    insertNewKunde("MusterUser1", "password", "MixMuster", "Mustermann", "Musterstrasse 6", 50858 )
+    insertNewKunde("MusterUser2", "password2", "MuxMuster2", "Mustermann", "Musterstrasse 12", 50809 )
     restaurantId = insertNewRestaurant("firstRestaurant", "xyz123", "Musterrestaurant", "Musterwald 5")
     speisekartenId = insertNewSpeisekarte("firstRestaurant")
     #speisekartenId = 1
@@ -96,8 +99,30 @@ def insertExampleData_All():
     addPostcode(12348,"firstRestaurant")
     addOpeningTimes("firstRestaurant", "Montag",12,14)
     addOpeningTimes("firstRestaurant", "Montag",15,16)
-    
-#
+    addNewBestellung('Neu', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('Neu', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser2')
+    addNewBestellung('Neu', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1')
+    addNewBestellung('In Bearbeitung', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('In Bearbeitung', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser2')
+    addNewBestellung('In Bearbeitung', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1')
+    addNewBestellung('Fertig', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('Fertig', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser2')
+    addNewBestellung('Fertig', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1')
+    addNewBestellung('Storniert', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser');
+    addNewBestellung('Storniert', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser2');
+    addNewBestellung('Storniert', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1');
+    addNewBestellung('Neu', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('Neu', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('Neu', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('In Bearbeitung', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('In Bearbeitung', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('In Bearbeitung', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('Fertig', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('Fertig', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('Fertig', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewBestellung('Storniert', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser');
+    addNewBestellung('Storniert', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser');
+    addNewBestellung('Storniert', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser');
 #Kundenaccountverwaltungsmethoden
 
 
@@ -295,6 +320,98 @@ def deletePostcodeWithId(postcodeId):
     con.commit()
     con.close()
     print("Deletion of one postcode( "+str(postcodeId) +")")
+
+def addNewBestellung (status, eingangsTag, eingangsUhrzeit, zusatztext, restaurant_username, customer_username):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    cur.execute("INSERT INTO bestellung(status, eingangsTag, eingangsUhrzeit, zusatztext, restaurant_username, customer_username) VALUES(?,?,?,?,?,?)", (status,eingangsTag, eingangsUhrzeit, zusatztext, restaurant_username, customer_username))
+    cur.close()
+    con.commit()
+    con.close()
+
+# get new orders for restaurant
+def getNewOrdersForRestaurant(username):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()    
+    result = cur.execute("SELECT * FROM bestellung where restaurant_username='" + username + "' and status='Neu' order by eingangsTag asc , eingangsUhrzeit asc;");
+    newOrders = list()
+    for x in result:
+        newOrders.append(order(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
+    cur.close()
+    con.close()
+    return newOrders;
+
+# get pending orders for restaurant
+def getPendingOrdersForRestaurant(username):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()    
+    result = cur.execute("SELECT * FROM bestellung where restaurant_username='" + username + "' and status='In Bearbeitung' order by eingangsTag asc , eingangsUhrzeit asc;");
+    pendingOrders = list()
+    for x in result:
+        pendingOrders.append(order(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
+    cur.close()
+    con.close()
+    return pendingOrders;
+
+# get finished orders for restaurant
+def getFinishedOrdersForRestaurant(username):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()    
+    result = cur.execute("SELECT * FROM bestellung where restaurant_username='" + username + "' and status='Fertig' order by eingangsTag asc , eingangsUhrzeit asc;");
+    finishedOrders = list()
+    for x in result:
+        finishedOrders.append(order(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
+    cur.close()
+    con.close()
+    return finishedOrders;    
+
+# get canceled orders for restaurant
+def getCanceledOrdersForRestaurant(username):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()    
+    result = cur.execute("SELECT * FROM bestellung where restaurant_username='" + username + "' and status='Storniert' order by eingangsTag asc , eingangsUhrzeit asc;");
+    canceledOrders = list()
+    for x in result:
+        canceledOrders.append(order(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
+    cur.close()
+    con.close()
+    return canceledOrders;  
+
+# get pending orders for customer
+def getPendingOrdersForCustomer(username):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()    
+    result = cur.execute("SELECT * FROM bestellung where customer_username='" + username + "' and status='In Bearbeitung' order by eingangsTag asc , eingangsUhrzeit asc;");
+    pendingOrders = list()
+    for x in result:
+        pendingOrders.append(order(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
+    cur.close()
+    con.close()
+    return pendingOrders;
+
+# get finished orders for customer
+def getFinishedOrdersForCustomer(username):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()    
+    result = cur.execute("SELECT * FROM bestellung where customer_username='" + username + "' and status='Fertig' order by eingangsTag asc , eingangsUhrzeit asc;");
+    finishedOrders = list()
+    for x in result:
+        finishedOrders.append(order(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
+    cur.close()
+    con.close()
+    return finishedOrders; 
+
+    # get canceled orders for customer
+def getCanceledOrdersForCustomer(username):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()    
+    result = cur.execute("SELECT * FROM bestellung where customer_username='" + username + "' and status='Storniert' order by eingangsTag asc , eingangsUhrzeit asc;");
+    canceledOrders = list()
+    for x in result:
+        canceledOrders.append(order(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
+    cur.close()
+    con.close()
+    return canceledOrders;
 
 #vorallem für das an- & ablehnen gedacht
 def changeBestellungStatus():

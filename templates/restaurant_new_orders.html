@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"!>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <title>Neue Bestellungen</title>
+    </head>
+    <body>
+        <h1>Neue Bestellungen</h1>
+        <div class="container">
+            <ul>
+                {%for newOrder in newOrders%}
+                <li class="list-group-item" style="list-style-type: none;">
+                    <div class="row">
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-3">
+                            Bestellung {{ newOrder.orderId }} 
+                        </div>
+                        <div class="col-sm-3">
+                            {{ newOrder.status }} - {{ newOrder.date }} - {{ newOrder.time }}
+                        </div>
+                        <div class="col-sm-3">
+                            <form action="{{ url_for('newOrderDetails',orderId = newOrder.orderId) }}" method=post >
+                                <input type=hidden name=order_details value="{{newOrder.id}}"  />
+                                <button type="submit">Details</button>
+                            </form>   
+                        </div>
+                </li>  
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="row-sm-20">
+            <form action="/restaurant" method="get">
+                <button type="submit">Zurück zur Homepage</button>
+            </form>
+        </div>
+    </body>
+</html>

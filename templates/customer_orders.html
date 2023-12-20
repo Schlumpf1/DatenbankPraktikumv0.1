@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"!>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <title>Bestellungen</title>
+    </head>
+    <body>
+        <h1>Bestellungen</h1>
+        <hr><br>
+        <h3>Laufende Bestellungen</h3>
+        <div class="container">
+            <ul>
+                {%for pendingOrder in pendingOrders%}
+                <li class="list-group-item" style="list-style-type: none;">
+                    <div class="row">
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-3">
+                            Bestellung {{ pendingOrder.orderId }} 
+                        </div>
+                        <div class="col-sm-3">
+                            {{ pendingOrder.status }} - {{ pendingOrder.date }} - {{ pendingOrder.time }}
+                        </div>
+                        <div class="col-sm-3">
+                            <form action="{{ url_for('customerOrderDetails',orderId = pendingOrder.orderId) }}" method=post >
+                                <input type=hidden name=order_details value="{{pendingOrder.id}}"  />
+                                <button type="submit">Details</button>
+                            </form>   
+                        </div>
+                </li>  
+                {% endfor %}
+            </ul>
+        </div>
+        <hr><br>
+        <h3>Abgeschlossene Bestellungen</h3>
+        <div class="container">
+            <ul>
+                {%for finishedOrder in finishedOrders %}
+                <li class="list-group-item" style="list-style-type: none;">
+                    <div class="row">
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-3">
+                            Bestellung {{ finishedOrder.orderId }} 
+                        </div>
+                        <div class="col-sm-3">
+                            {{ finishedOrder.status }} - {{ finishedOrder.date }} - {{ finishedOrder.time }}
+                        </div>
+                        <div class="col-sm-3">
+                            <form action="{{ url_for('restaurantOrderDetails',orderId = finishedOrder.orderId) }}" method=post >
+                                <input type=hidden name=order_details value="{{finishedOrder.id}}"  />
+                                <button type="submit">Details</button>
+                            </form>   
+                        </div>
+                </li>  
+                {% endfor %}
+            </ul>
+        </div>
+        <hr><br>
+        <h3>Stornierte Bestellungen</h3>
+        <div class="container">
+            <ul>
+                {%for canceledOrder in canceledOrders %}
+                <li class="list-group-item" style="list-style-type: none;">
+                    <div class="row">
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-3">
+                            Bestellung {{ canceledOrder.orderId }} 
+                        </div>
+                        <div class="col-sm-3">
+                            {{ canceledOrder.status }} - {{ canceledOrder.date }} - {{ canceledOrder.time }}
+                        </div>
+                        <div class="col-sm-3">
+                            <form action="{{ url_for('restaurantOrderDetails',orderId = canceledOrder.orderId) }}" method=post >
+                                <input type=hidden name=order_details value="{{canceledOrder.id}}"  />
+                                <button type="submit">Details</button>
+                            </form>   
+                        </div>
+                </li>  
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="row-sm-20">
+            <form action="/customer" method="get">
+                <button type="submit">Zurück zur Homepage</button>
+            </form>
+        </div>
+    </body>
+</html>
