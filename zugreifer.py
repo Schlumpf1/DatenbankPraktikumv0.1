@@ -113,16 +113,12 @@ def insertExampleData_All():
     addNewBestellung('Storniert', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1');
     addNewBestellung('Neu', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
     addNewBestellung('Neu', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('Neu', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser')
     addNewBestellung('In Bearbeitung', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
     addNewBestellung('In Bearbeitung', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('In Bearbeitung', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser')
     addNewBestellung('Fertig', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
     addNewBestellung('Fertig', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('Fertig', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser')
     addNewBestellung('Storniert', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser');
     addNewBestellung('Storniert', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser');
-    addNewBestellung('Storniert', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser');
 #Kundenaccountverwaltungsmethoden
 
 
