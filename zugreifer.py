@@ -3,6 +3,10 @@ from module_item import *
 from module_openingTime import *
 from module_postcodeitem import *
 from module_order import *
+from module_restaurant import *
+from module_orderDetails import *
+from module_orderedItem import * 
+from module_customer import *
 ####################
 ##____Methoden____##
 ####################
@@ -89,36 +93,30 @@ def insertExampleData_All():
     speisekartenId = insertNewSpeisekarte("firstRestaurant")
     #speisekartenId = 1
     print("SpeisekartenId",speisekartenId)
-    insertNewItem(speisekartenId,"Das beste Essen",0,"Nicht vorhandene Beschreibung",None)
-    insertNewItem(speisekartenId,"Das beste Essen1",0,"Nicht vorhandene Beschreibung",None)
-    insertNewItem(speisekartenId,"Das beste Essen2",0,"Nicht vorhandene Beschreibung",None)
-    insertNewItem(speisekartenId,"Das beste Essen3",0,"Nicht vorhandene Beschreibung",None)
+    itemId1 = insertNewItem(speisekartenId,"Das beste Essen",10,"Nicht vorhandene Beschreibung",None)
+    itemId2 = insertNewItem(speisekartenId,"Das beste Essen1",20,"Nicht vorhandene Beschreibung",None)
+    itemId3 = insertNewItem(speisekartenId,"Das beste Essen2",10,"Nicht vorhandene Beschreibung",None)
+    itemId4 = insertNewItem(speisekartenId,"Das beste Essen3",15,"Nicht vorhandene Beschreibung",None)
     addPostcode(12345,"firstRestaurant")
     addPostcode(12346,"firstRestaurant")
     addPostcode(12347,"firstRestaurant")
     addPostcode(12348,"firstRestaurant")
     addOpeningTimes("firstRestaurant", "Montag",12,14)
     addOpeningTimes("firstRestaurant", "Montag",15,16)
-    addNewBestellung('In Bearbeitung', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('In Bearbeitung', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser2')
-    addNewBestellung('In Bearbeitung', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1')
-    addNewBestellung('In Zubereitung', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('In Zubereitung', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser2')
-    addNewBestellung('In Zubereitung', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1')
-    addNewBestellung('Abgeschlossen', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('Abgeschlossen', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser2')
-    addNewBestellung('Abgeschlossen', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1')
-    addNewBestellung('Storniert', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser');
-    addNewBestellung('Storniert', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser2');
-    addNewBestellung('Storniert', '20-12-2023', '10:00', 'text', 'firstRestaurant', 'MusterUser1');
-    addNewBestellung('In Zubereitung', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('In Zubereitung', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('In Bearbeitung', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('In Bearbeitung', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('Abgeschlossen', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('Abgeschlossen', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser')
-    addNewBestellung('Storniert', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser');
-    addNewBestellung('Storniert', '02-02-2023', '16:00', 'text', 'firstRestaurant', 'MusterUser');
+    bestellungsId = addNewBestellung('In Bearbeitung', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewItemToBestellt(bestellungsId, itemId1, 1)
+    addNewItemToBestellt(bestellungsId, itemId2, 2)
+    addNewItemToBestellt(bestellungsId, itemId3, 1)
+    addNewItemToBestellt(bestellungsId, itemId4, 3)
+    bestellungsId = addNewBestellung('In Zubereitung', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewItemToBestellt(bestellungsId, itemId1, 1)
+    addNewItemToBestellt(bestellungsId, itemId2, 2)
+    bestellungsId = addNewBestellung('Abgeschlossen', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewItemToBestellt(bestellungsId, itemId1, 1)
+    addNewItemToBestellt(bestellungsId, itemId3, 2)
+    bestellungsId = addNewBestellung('Storniert', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
+    addNewItemToBestellt(bestellungsId, itemId2, 1)
+    addNewItemToBestellt(bestellungsId, itemId4, 2)
 #Kundenaccountverwaltungsmethoden
 
 
@@ -321,6 +319,16 @@ def addNewBestellung (status, eingangsTag, eingangsUhrzeit, zusatztext, restaura
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
     cur.execute("INSERT INTO bestellung(status, eingangsTag, eingangsUhrzeit, zusatztext, restaurant_username, customer_username) VALUES(?,?,?,?,?,?)", (status,eingangsTag, eingangsUhrzeit, zusatztext, restaurant_username, customer_username))
+    zwischenspeicher = cur.lastrowid
+    cur.close()
+    con.commit()
+    con.close()
+    return zwischenspeicher;
+
+def addNewItemToBestellt(bestellungId, itemId, anzahl):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    cur.execute("INSERT INTO bestellt(bestell_id, itemId, anzahl) VALUES(?,?, ?)", (bestellungId, itemId, anzahl))
     cur.close()
     con.commit()
     con.close()
@@ -421,10 +429,60 @@ def getCanceledOrdersForCustomer(username):
     con.close()
     return canceledOrders;
 
-#vorallem für das an- & ablehnen gedacht
-def changeBestellungStatus():
+def getRestaurantDetailsForOrder(orderId):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
+    result = cur.execute("SELECT r.name, r.adresse FROM restaurant r, bestellung b where r.username=b.restaurant_username and b.bestell_id=" + str(orderId))
+    restaurant1 = None
+    for x in result:
+        restaurant1 = restaurant(None, None, x[0], None, x[1], None)
+    cur.close()
+    con.close()
+    return restaurant1;
+
+def getCustomerDetailsForOrder(orderId):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    result = cur.execute("SELECT k.vorname, k.nachname, k.adresse, k.postleitzahl FROM kunde k, bestellung b where k.username=b.customer_username and b.bestell_id=" + str(orderId))
+    customer1 = None
+    for x in result:
+        customer1 = customer(None, None, x[0], x[1], x[2], x[3])
+    cur.close()
+    con.close()
+    return customer1;
+
+def getOrderDetailsForOrder(orderId):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    result = cur.execute("SELECT b.status, b.eingangsTag, b.eingangsUhrzeit, b.zusatzText FROM bestellung b where b.bestell_id=" + str(orderId))
+    bestellung1 = None
+    for x in result:
+        bestellung1 = order(None, x[0], x[1], x[2], x[3], None, None)
+    cur.close()
+    con.close()
+    return bestellung1;
+
+def getItemDetailsForOdrer(orderId):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    result = cur.execute("select i.name, i.preis, b.anzahl from items i inner join bestellt b on b.itemId = i.itemId where bestell_id=" + str(orderId))
+    items = list()
+    total = 0;
+    for x in result:
+        items.append(orderedItem(x[0], x[1], x[2], x[1] * x[2]))
+        total += (x[1] * x[2])       
+    cur.close()
+    con.close()
+    orderDetails1 = orderDetails(items, total)
+    return orderDetails1;    
+
+
+
+#vorallem für das an- & ablehnen gedacht
+def changeBestellungStatus(orderId, status):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    cur.execute("UPDATE bestellung set status='" + status + "' where bestell_id=" + str(orderId));
     cur.close()
     con.commit()
     con.close()
@@ -488,10 +546,12 @@ def insertNewItem(speisekartenId, name, preis, beschreibung, bild):
     item = (speisekartenId ,name ,preis ,beschreibung)
     print(item)
     cur.execute("INSERT INTO items (speisekartenId, name, preis, beschreibung) VALUES( ? , ? , ? , ? )", item)  
+    zwischenSpeicher = cur.lastrowid;
     cur.close()
     con.commit()
     con.close()
     print("New Item inserted (name: "+name +")")
+    return zwischenSpeicher;
     
 #so sollen nicht mehr zu verkaufstehende Items wieder gelöscht werden
 def removeItemFromSpeisekarte(itemId):

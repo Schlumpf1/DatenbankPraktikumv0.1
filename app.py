@@ -50,9 +50,6 @@ def newOrders():
 def newOrderDetails():
     return render_template('restaurant_new_order_details.html')
 
-@app.route('/restaurant/order_details/<int:orderId>', methods=['POST'])
-def restaurantOrderDetails(orderId):
-    return render_template('restaurant_order_details.html', orderId = orderId)
 
 @app.route('/restaurant/bestellungen')
 def restaurantOrders():
@@ -63,6 +60,19 @@ def restaurantOrders():
     finishedOrders = zugreifer.getFinishedOrdersForRestaurant(username)
     canceledOrders = zugreifer.getCanceledOrdersForRestaurant(username)
     return render_template('restaurant_orders.html', pendingOrders = pendingOrders, finishedOrders = finishedOrders, canceledOrders = canceledOrders)    
+
+@app.route('/restaurant/order_details/<int:orderId>', methods=['POST'])
+def restaurantOrderDetails(orderId):
+    customer = zugreifer.getCustomerDetailsForOrder(orderId)
+    bestellung = zugreifer.getOrderDetailsForOrder(orderId)
+    orderDetails = zugreifer.getItemDetailsForOdrer(orderId)
+    return render_template('restaurant_order_details.html', orderId = orderId, customer = customer, bestellung = bestellung, orderDetails = orderDetails)
+
+@app.route('/restaurant/bestellungen/<int:orderId>', methods=['POST'])
+def setOrderAsDone(orderId):
+    zugreifer.changeBestellungStatus(orderId, "Abgeschlossen")
+    return restaurantOrderDetails(orderId)
+
 
 @app.route("/customer/bestellungen")
 def customerOrders():
@@ -77,7 +87,10 @@ def customerOrders():
 
 @app.route('/customer/order_details/<int:orderId>', methods=['POST'])
 def customerOrderDetails(orderId):
-    return render_template('customer_order_details.html', orderId = orderId)
+    restaurant = zugreifer.getRestaurantDetailsForOrder(orderId)
+    bestellung = zugreifer.getOrderDetailsForOrder(orderId)
+    orderDetails = zugreifer.getItemDetailsForOdrer(orderId)
+    return render_template('customer_order_details.html', orderId = orderId, restaurant = restaurant, bestellung = bestellung, orderDetails = orderDetails)
 
 
 @app.route("/restaurant/delete_Item/<int:itemId>", methods=['POST'])
