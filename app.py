@@ -33,8 +33,13 @@ def restaurant():
     return render_template('speisekarte.html', items=zugreifer.getItemsVonSpeisekarte(zugreifer.getSpeisekarte(session['restaurant_username'])))
 
 @app.route("/restaurant/logout")
-def logout():
-    session.clear()
+def restaurant_logout():
+    session.pop("restaurant_username", None)
+    return render_template('startpage.html')
+
+@app.route("/customer/logout")
+def customer_logout():
+    session.pop("customer_username", None)
     return render_template('startpage.html')
 
 @app.route('/restaurant/bestellungen/neu')
@@ -280,7 +285,9 @@ def restaurant_login():
             else:
                 message = "Benutzername oder Passwort ist falsch. Bitte versuchen Sie erneut."
                 return render_template('restaurant_login.html', message = message)
-        
+        else:
+            message = "Benutzername existiert nicht."
+            return render_template('restaurant_login.html', message = message)
     #elif request.method == 'GET':
     return render_template('restaurant_login.html')
     
@@ -291,19 +298,23 @@ def restaurant_register():
         password = request.form['password']
         passwordControll = request.form['passwordControll']
         restaurantName = request.form['restaurantName']
-        adresse = request.form['adresse']
+        street = request.form['street']
+        houseNumber = request.form['houseNumber']
+        plz = request.form['zipcode']
+        city = request.form['city']
+        address = street + " " + houseNumber + ", " + plz + " " + city
         if password == passwordControll:
             #usernamedopplung pruefen
-            if zugreifer.existUsername(username) ==False:
-                zugreifer.insertNewRestaurant(username, password, restaurantName, adresse)
+            if zugreifer.existUsername(username) == False:
+                zugreifer.insertNewRestaurant(username, password, restaurantName, address)
                 zugreifer.insertNewSpeisekarte(username)
                 session['restaurant_username'] = username
                 return redirect('/restaurant')
             else:
-                print("Register failed, Username already exists")
-                render_template('restaurant_register.html',message="Username already in use!")
+                return render_template('restaurant_register.html',message="Benutzername schon vergeben!")
         else:
-            return jsonify(error='Username already exists!'), 402
+            message = "Beide Passworts sollen gleich sein!"   
+            return render_template('restaurant_register.html', message = message)
     #Wenn Methode != POST, password != passwordControll
     return render_template('restaurant_register.html',message = "")
 
@@ -331,8 +342,12 @@ def customer_login():
             if zugreifer.checkCustomerLoginData(username,password):
                 session['customer_username'] = username;
                 return redirect("/customer")
-            
-        
+            else:
+                message = "Passwort ist falsch"
+                return render_template('customer_login.html', message = message)
+        else:
+            message = "Benutzername existiert nicht"
+            return render_template('customer_login.html', message = message)
     #elif request.method == 'GET':
     return render_template('customer_login.html')
 
@@ -347,11 +362,13 @@ def customer_register():
         street = request.form['street']
         houseNumber = request.form['houseNumber']
         plz = request.form['plz']
+        city = request.form['city']
+        address = street + " " + houseNumber + ", " + plz + " " + city
         if password == passwordControll:
             #usernamedopplung pruefen
             print(zugreifer.existsCustomersUsername(username))
             if zugreifer.existsCustomersUsername(username) == 0:
-                zugreifer.insertNewKunde(username, password,firstName, lastName, street + ' ' + houseNumber,plz)
+                zugreifer.insertNewKunde(username, password,firstName, lastName, address)
                 session['customer_username'] = username
                 return redirect('/customer')
             else:

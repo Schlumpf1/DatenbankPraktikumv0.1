@@ -15,7 +15,7 @@ from module_customer import *
 def createTB_Kunde():
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("CREATE TABLE 'kunde'('username' TEXT PRIMARY KEY , 'password' TEXT,'vorname' TEXT, 'nachname' TEXT,'adresse' TEXT, 'postleitzahl' INTEGER)")
+    cur.execute("CREATE TABLE 'kunde'('username' TEXT PRIMARY KEY , 'password' TEXT,'vorname' TEXT, 'nachname' TEXT,'adresse' TEXT)")
     cur.close()
     con.close()
 
@@ -86,9 +86,9 @@ def createTB_All():
 
 def insertExampleData_All():
     #Kunde
-    insertNewKunde("MusterUser","Musterpasswort","Max", "Mustermann", "Musterstrasse 5",47057)
-    insertNewKunde("MusterUser1", "password", "MixMuster", "Mustermann", "Musterstrasse 6", 50858 )
-    insertNewKunde("MusterUser2", "password2", "MuxMuster2", "Mustermann", "Musterstrasse 12", 50809 )
+    insertNewKunde("MusterUser","Musterpasswort","Max", "Mustermann", "Musterstrasse 5, 47057 Duisburg")
+    insertNewKunde("MusterUser1", "password", "MixMuster", "Mustermann", "Musterstrasse 6, 50858 Köln")
+    insertNewKunde("MusterUser2", "password2", "MuxMuster2", "Mustermann", "Musterstrasse 12, 40545 Stadt")
     restaurantId = insertNewRestaurant("firstRestaurant", "xyz123", "Musterrestaurant", "Musterwald 5")
     speisekartenId = insertNewSpeisekarte("firstRestaurant")
     #speisekartenId = 1
@@ -121,11 +121,11 @@ def insertExampleData_All():
 
 
 #fügt neuen Kunden in die Datenbank ohne zu überprüfen, ob dieser schon vorhanden ist
-def insertNewKunde(username, password,vorname,nachname,adresse,postleitzahl):
+def insertNewKunde(username, password,vorname,nachname,adresse):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("INSERT INTO kunde (username, password, vorname, nachname, adresse, postleitzahl) VALUES(?,?,?,?,?,?)",
-    (username,password,vorname,nachname,adresse,postleitzahl))
+    cur.execute("INSERT INTO kunde (username, password, vorname, nachname, adresse) VALUES(?,?,?,?,?)",
+    (username,password,vorname,nachname,adresse))
     zwischenspeicher = cur.lastrowid
     cur.close()
     con.commit()
@@ -443,10 +443,10 @@ def getRestaurantDetailsForOrder(orderId):
 def getCustomerDetailsForOrder(orderId):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    result = cur.execute("SELECT k.vorname, k.nachname, k.adresse, k.postleitzahl FROM kunde k, bestellung b where k.username=b.customer_username and b.bestell_id=" + str(orderId))
+    result = cur.execute("SELECT k.vorname, k.nachname, k.adresse FROM kunde k, bestellung b where k.username=b.customer_username and b.bestell_id=" + str(orderId))
     customer1 = None
     for x in result:
-        customer1 = customer(None, None, x[0], x[1], x[2], x[3])
+        customer1 = customer(None, None, x[0], x[1], x[2])
     cur.close()
     con.close()
     return customer1;

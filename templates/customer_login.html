@@ -10,7 +10,7 @@
     </head>
     <body>
         <div class="col-sm-2"></div>
-        <div class="col-sm-6" style="background-color:yellow;">
+        <div class="col-sm-6" style="background-color:pink;">
             <form action="/customer/login" method="post">
                 <h2>Kunden-Einloggen</h2>
                 <label for="username">Benutzername:</label>
@@ -20,10 +20,11 @@
                 <input type="password" id="password" name="password" required>
         
                 <button type="submit">Einloggen</button>
+                <p style="color: darkred;"><b>{{message}}</b></p>
             </form>
         </div>
 
-        <div class="col-sm-2" style="background-color:yellow;">
+        <div class="col-sm-2" style="background-color:pink;">
             <div style="height: 64px;"></div>
             <button type="button" onclick="window.location.href = '/customer/registrieren';">Registrieren</button>  
             <div style="height: 1px;"></div>  

@@ -14,17 +14,19 @@
                 <p style="white-space: nowrap; margin:25px;">Restaurant Registrieren</p>
             </div>
             <div class="col-auto">
-                <button  type="button" onclick="window.location.href = 'restaurant/login';" >Log IN</button>  
+                <form action="/restaurant/login" method="get">
+                    <button  type="submit">Einloggen</button>  
+                </form>
             </div> 
         </div>
         <div class="col-sm-2"></div>
-        <div class="col-sm-8" style="background-color:yellow;">
+        <div class="col-sm-8" style="background-color:pink;">
             <div class="col-sm-6">
             <form action="/restaurant/registrieren" method="POST">
                 
                 <div class="container" style="margin-top:10px;">
                     <div class="col-sm-3">
-                        <label for="username">Username:</label>
+                        <label for="username">Benutzername:</label>
                     </div>
                     <div class="col-sm-3">
                         <input type="text" id="username" name="username" required >
@@ -32,7 +34,7 @@
                 </div>
                 <div class="container" style="margin-top:10px;">
                     <div class="col-sm-3">
-                        <label for="password">Password:</label>
+                        <label for="password">Passwort:</label>
                     </div>
                     <div class="col-sm-3">
                         <input type="password" id="password" name="password" required>
@@ -56,15 +58,35 @@
                 </div>
                 <div class="container" style="margin-top:10px;">
                     <div class="col-sm-3">
-                        <label for="Adresse">Adresse ihres Restaurants:</label>
+                        <label for="street">Straße:</label>
                     </div>
                     <div class="col-sm-3">
-                        <input type="text" id="adresse" name="adresse" required >
+                        <input type="text" id="street" name="street" required >
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="houseNumber">Hausnummer</label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="text" id="houseNumber" name="houseNumber" required>
                     </div>
                 </div>
                 <div class="container" style="margin-top:10px;">
-                    <div id="userInfo" style="display: contents;">
-                        {{ message}}
+                    <div class="col-sm-3">
+                        <label for="zipcode">PLZ:</label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="number" id="zipcode" name="zipcode" required >
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="city">Stadt</label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="text" id="city" name="city" required>
+                    </div>
+                </div>
+                <div class="container" style="margin-top:10px;">
+                    <div id="userInfo" style="display: contents; color: darkred;">
+                        <b>{{ message}}</b>
                     </div>
                 </div>
                 <div class="container" style="margin-top:10px;">
