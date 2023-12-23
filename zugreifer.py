@@ -15,7 +15,7 @@ from module_customer import *
 def createTB_Kunde():
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("CREATE TABLE 'kunde'('username' TEXT PRIMARY KEY , 'password' TEXT,'vorname' TEXT, 'nachname' TEXT,'adresse' TEXT)")
+    cur.execute("CREATE TABLE 'kunde'('username' TEXT PRIMARY KEY , 'password' TEXT,'vorname' TEXT, 'nachname' TEXT,'adresse' TEXT, 'postleitzahl' INTEGER)")
     cur.close()
     con.close()
 
@@ -86,9 +86,9 @@ def createTB_All():
 
 def insertExampleData_All():
     #Kunde
-    insertNewKunde("MusterUser","Musterpasswort","Max", "Mustermann", "Musterstrasse 5, 47057 Duisburg")
-    insertNewKunde("MusterUser1", "password", "MixMuster", "Mustermann", "Musterstrasse 6, 50858 Köln")
-    insertNewKunde("MusterUser2", "password2", "MuxMuster2", "Mustermann", "Musterstrasse 12, 40545 Stadt")
+    insertNewKunde("MusterUser","Musterpasswort","Max", "Mustermann", "Musterstrasse 5, 47057 Duisburg", 47057)
+    insertNewKunde("MusterUser1", "password", "MixMuster", "Mustermann", "Musterstrasse 6, 50858 Köln", 50858)
+    insertNewKunde("MusterUser2", "password2", "MuxMuster2", "Mustermann", "Musterstrasse 12, 40545 Stadt", 40545)
     restaurantId = insertNewRestaurant("firstRestaurant", "xyz123", "Musterrestaurant", "Musterwald 5")
     speisekartenId = insertNewSpeisekarte("firstRestaurant")
     #speisekartenId = 1
@@ -121,11 +121,11 @@ def insertExampleData_All():
 
 
 #fügt neuen Kunden in die Datenbank ohne zu überprüfen, ob dieser schon vorhanden ist
-def insertNewKunde(username, password,vorname,nachname,adresse):
+def insertNewKunde(username, password,vorname,nachname,adresse, plz):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("INSERT INTO kunde (username, password, vorname, nachname, adresse) VALUES(?,?,?,?,?)",
-    (username,password,vorname,nachname,adresse))
+    cur.execute("INSERT INTO kunde (username, password, vorname, nachname, adresse, postleitZahl) VALUES(?,?,?,?,?,?)",
+    (username,password,vorname,nachname,adresse, plz))
     zwischenspeicher = cur.lastrowid
     cur.close()
     con.commit()

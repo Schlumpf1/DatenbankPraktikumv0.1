@@ -370,7 +370,7 @@ def customer_register():
             #usernamedopplung pruefen
             print(zugreifer.existsCustomersUsername(username))
             if zugreifer.existsCustomersUsername(username) == 0:
-                zugreifer.insertNewKunde(username, password,firstName, lastName, address)
+                zugreifer.insertNewKunde(username, password,firstName, lastName, address, plz)
                 session['customer_username'] = username
                 return redirect('/customer')
             else:
