@@ -28,10 +28,10 @@
                 </div>
                 <div class="col-sm-1">
                     <select name="category" id="category">
-                        <option value="Getränk" >Getränk</option>
-                        <option value="Nachtisch" >Nachtisch</option>
+                        <option value="Getränk" {% if item.category == "Getränk"%} selected {% endif %}>Getränk</option>
+                        <option value="Nachtisch" {% if item.category == "Nachtisch" %} selected {% endif %} >Nachtisch</option>
                         <option value="Vorspeise" {% if item.category == "Vorspeise" %} selected {% endif %} >Vorspeise</option>
-                        <option value="Hauptgericht">Hauptgericht</option>
+                        <option value="Hauptgericht" {% if item.category == "Hauptgericht" %} selected {% endif %}>Hauptgericht</option>
                     </select>
                 </div>
                 <div class="col-sm-1"></div>
