@@ -30,7 +30,7 @@ def createTB_Restaurant():
 def createTB_Item():
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("CREATE TABLE 'items'('itemId' INTEGER PRIMARY KEY AUTOINCREMENT, 'speisekartenId' INTEGER, 'name' TEXT, 'preis' INTEGER, 'beschreibung' TEXT, 'bild' BLOB)")
+    cur.execute("CREATE TABLE 'items'('itemId' INTEGER PRIMARY KEY AUTOINCREMENT, 'speisekartenId' INTEGER, 'name' TEXT, 'preis' INTEGER, 'beschreibung' TEXT, 'bild' BLOB, 'category' text)")
     cur.close()
     con.close()
 
@@ -93,10 +93,10 @@ def insertExampleData_All():
     speisekartenId = insertNewSpeisekarte("firstRestaurant")
     #speisekartenId = 1
     print("SpeisekartenId",speisekartenId)
-    itemId1 = insertNewItem(speisekartenId,"Das beste Essen",10,"Nicht vorhandene Beschreibung",None)
-    itemId2 = insertNewItem(speisekartenId,"Das beste Essen1",20,"Nicht vorhandene Beschreibung",None)
-    itemId3 = insertNewItem(speisekartenId,"Das beste Essen2",10,"Nicht vorhandene Beschreibung",None)
-    itemId4 = insertNewItem(speisekartenId,"Das beste Essen3",15,"Nicht vorhandene Beschreibung",None)
+    itemId1 = insertNewItem(speisekartenId,"Das beste Essen",10,"Nicht vorhandene Beschreibung","Vorspeise")
+    itemId2 = insertNewItem(speisekartenId,"Das beste Essen1",20,"Nicht vorhandene Beschreibung","Vorspeise")
+    itemId3 = insertNewItem(speisekartenId,"Das beste Essen2",10,"Nicht vorhandene Beschreibung","Nachtisch")
+    itemId4 = insertNewItem(speisekartenId,"Das beste Essen3",15,"Nicht vorhandene Beschreibung", "Hauptgericht")
     addPostcode(12345,"firstRestaurant")
     addPostcode(12346,"firstRestaurant")
     addPostcode(12347,"firstRestaurant")
@@ -505,18 +505,18 @@ def getItemById(itemId):
     zwischenspeicher = cur.execute("SELECT * FROM items WHERE itemId= "+str(itemId))
     itemlist = list()
     for x in zwischenspeicher:
-        itemlist.append(item(x[0],x[1],x[2],x[3],x[4],x[5]))
+        itemlist.append(item(x[0],x[1],x[2],x[3],x[4],x[5], x[6]))
         localItem = itemlist[0]
     cur.close()
     con.close()
     print("GetItemById response with: "+ str(localItem))
     return localItem
 #Speisekartenid zuveraendern macht hier keinen Sinn, da jedes Restaurant nur eine Speisekarte hat
-def changeItemById(itemId, itemname, itempreis, itembeschreibung):
+def changeItemById(itemId, itemname, itempreis, itembeschreibung, category):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    print("UPDATE items SET name = '"+itemname+ "' , preis = '"+str(itempreis) +"', beschreibung = '"+itembeschreibung +"' WHERE itemId ='"+str(itemId)+"'")
-    cur.execute("UPDATE items SET name = '"+itemname+ "' , preis = '"+str(itempreis) +"', beschreibung = '"+itembeschreibung +"' WHERE itemId ='"+str(itemId)+"'")
+    print("UPDATE items SET name = '"+itemname+ "' , preis = '"+str(itempreis) +"', beschreibung = '"+itembeschreibung + "', category = '" + category +"' WHERE itemId ='"+str(itemId)+"'")
+    cur.execute("UPDATE items SET name = '"+itemname+ "' , preis = '"+str(itempreis) +"', beschreibung = '"+itembeschreibung + "', category = '" + category +"' WHERE itemId ='"+str(itemId)+"'")
     cur.close()
     con.commit()
     con.close()
@@ -532,7 +532,7 @@ def getItemsVonSpeisekarte(speisekartenId):
     itemlist = list()
     
     for x in zwischenspeicher:
-        itemlist.append(item(x[0],x[1],x[2],x[3],x[4],x[5]))
+        itemlist.append(item(x[0],x[1],x[2],x[3],x[4],x[5], x[6]))
     cur.close()
     con.close()
     print("Items (list.size= "+ str(len(itemlist))+") from Speisekarte "+ str(speisekartenId) +" requested")
@@ -540,12 +540,12 @@ def getItemsVonSpeisekarte(speisekartenId):
 #    return [item(1,"Apfel","2,70","keine Beschreibung", "Kein Bild"), item(2,"Birne","2,80","keine Beschreibung", "Kein Bild")]
 
 #so sollen neue Speisen, Getraenke & co eingefügt werden können
-def insertNewItem(speisekartenId, name, preis, beschreibung, bild):
+def insertNewItem(speisekartenId, name, preis, beschreibung, category ):
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    item = (speisekartenId ,name ,preis ,beschreibung)
+    item = (speisekartenId ,name ,preis ,beschreibung, category)
     print(item)
-    cur.execute("INSERT INTO items (speisekartenId, name, preis, beschreibung) VALUES( ? , ? , ? , ? )", item)  
+    cur.execute("INSERT INTO items (speisekartenId, name, preis, beschreibung, category) VALUES( ? , ? , ? , ?, ?)", item)  
     zwischenSpeicher = cur.lastrowid;
     cur.close()
     con.commit()

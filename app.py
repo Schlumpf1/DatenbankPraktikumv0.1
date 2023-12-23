@@ -52,7 +52,7 @@ def newOrders():
 
 
 @app.route('/restaurant/new_order_details/<int:orderId>', methods=['POST'])
-def newOrderDetails():
+def newOrderDetails(orderId):
     return render_template('restaurant_new_order_details.html')
 
 
@@ -120,9 +120,10 @@ def newItem_safe():
     itemPreis = request.form['itempreis']
     itemBeschreibung = request.form['itembeschreibung']
     itemBild = request.form['itembild']
+    category = request.form['category']
     print(itemBild)
     speisekartenId = zugreifer.getSpeisekarte(username)
-    zugreifer.insertNewItem(speisekartenId,itemName,itemPreis,itemBeschreibung,"BILD")
+    zugreifer.insertNewItem(speisekartenId,itemName,itemPreis,itemBeschreibung,category)
     return redirect("/restaurant")
 
 @app.route("/restaurant/changeItem/<int:item_id>", methods=['POST','GET'])
@@ -132,16 +133,17 @@ def changeItem(item_id: int):
         return render_template('restaurant_login.html')
     print(zugreifer.getItemById(item_id))
     if request.method == 'POST':
-        username = session['restaurant_username']
         itemName = request.form['itemname']
         itemPreis = request.form['itempreis']
         itemBeschreibung = request.form['itembeschreibung']
         itemBild = request.form['itembild']
-        zugreifer.changeItemById(item_id,itemName,itemPreis,itemBeschreibung)
+        category = request.form['category']
+        zugreifer.changeItemById(item_id,itemName,itemPreis,itemBeschreibung, category)
         print("changeItem(): Item(Id:"+str(item_id)+") changed")
         return redirect("/restaurant")
     else:
-        return render_template("restaurant_changeItem.html", item = zugreifer.getItemById(item_id))
+        item = zugreifer.getItemById(item_id)
+        return render_template("restaurant_changeItem.html", item = item)
 
 
 @app.route("/restaurant/openingTime")

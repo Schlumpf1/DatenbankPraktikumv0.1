@@ -25,13 +25,16 @@
                             <li class="list-group-item" style="list-style-type: none;">
                                 <div class="row">
                                     <div class="col-sm-1"></div>
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-2">
                                         {{ item.name }}
                                     </div>
                                     <div class="col-sm-2">
                                         {{ item.preis }} €
                                     </div>
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-2">
+                                        {{ item.category }}
+                                    </div>
+                                    <div class="col-sm-2">
                                         <form action="{{ url_for('delete_Item',itemId =item.itemId) }}" method=post >
                                             <input type=hidden name=itemId_to_delete value="{{item.itemId}}"  />
                                             <button type="submit">löschen</button>
