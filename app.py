@@ -187,7 +187,7 @@ def openingTime():
 def addOpeningTime():
     if(not 'restaurant_username' in session):
         return render_template('restaurant_login.html')
-    username  = session['username']
+    username  = session['restaurant_username']
     day = request.form['day']
     fromTime = request.form['from']
     toTime = request.form['to']
