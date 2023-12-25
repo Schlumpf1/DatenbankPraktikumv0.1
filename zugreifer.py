@@ -7,6 +7,7 @@ from module_restaurant import *
 from module_orderDetails import *
 from module_orderedItem import * 
 from module_customer import *
+from externMethods import *
 ####################
 ##____Methoden____##
 ####################
@@ -305,6 +306,28 @@ def getPostcodesForRestaurant(restaurant_username):
     con.close()
     print("Found "+str(len(postcodes)) +" postcode(s) for restaurant with username: "+ restaurant_username)
     return postcodes
+
+def existPostcodeForRestaurant(postcode, restaurant_username):
+    con = sqlite3.connect('Database.db')
+    cur = con.cursor()
+    result = cur.execute("SELECT * FROM postcodes WHERE restaurant_username= '" +restaurant_username + "'");  
+    postcodes = list()
+    for x in result:
+        postcodes.append(postcodeitem(x[0], x[1], x[2]))
+        
+    returner = False
+    for x in postcodes:
+        print(str(x.postcode))
+        if externMethods.compareNumbers(x.postcode, postcode):
+            returner = True
+    cur.close()
+    con.close()
+    if returner:
+        print("It exists at minimum 1 Postcode (="+str(postcode)+") for the restaurant "+ restaurant_username)
+    else:
+        
+        print("It does not exists a Postcode (="+str(postcode)+") for the restaurant "+ restaurant_username)
+    return returner
 
 def deletePostcodeWithId(postcodeId):
     con = sqlite3.connect("Database.db")

@@ -11,6 +11,32 @@
     <body>
         <h1>Bestellungen</h1>
         <hr><br>
+        <br>
+        <h3>Neue Bestellungen</h3>
+        <div class="container">
+        <!--
+            <ul>
+                {%for pendingOrder in pendingOrders%}
+                <li class="list-group-item" style="list-style-type: none;">
+                    <div class="row">
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-3">
+                            Bestellung {{ pendingOrder.orderId }} 
+                        </div>
+                        <div class="col-sm-3">
+                            {{ pendingOrder.status }} - {{ pendingOrder.date }} - {{ pendingOrder.time }}
+                        </div>
+                        <div class="col-sm-3">
+                            <form action="{{ url_for('restaurantOrderDetails',orderId = pendingOrder.orderId) }}" method=post >
+                                <input type=hidden name=order_details value="{{pendingOrder.id}}"  />
+                                <button type="submit">Details</button>
+                            </form>   
+                        </div>
+                </li>  
+                {% endfor %}
+            </ul>
+        -->
+        </div>
         <h3>Laufende Bestellungen</h3>
         <div class="container">
             <ul>

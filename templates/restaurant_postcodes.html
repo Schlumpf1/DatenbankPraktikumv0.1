@@ -11,7 +11,24 @@
 </head>
 <body>
     <div class = "row">
-        <h1 style="padding-top: 50px; padding-left: 50px;">In folgende Liefergebiete liefert ihr Restaurant</h1>
+        <h1 style="padding-top: 50px; padding-left: 50px;">
+            In folgende Liefergebiete liefert ihr Restaurant
+        </h1>
+    </div>  
+        <div class="row">
+            <form action="{{ url_for('add_Postcode') }}" method=post >
+                <div class=" col-sm-2"></div>
+                <div class=" col-sm-5">
+                    <input type="text" name="postcode_To_Add" placeholder="Postleitzahl">
+                    <button type="submit">Postleitzahl hinzufügen</button>
+                </div>
+            </form>
+        </div>
+    <div class="row"> 
+        {% for message in messages%}
+            <div class="col-sm-2"></div>
+            <p class = "col-sm-9" style="color: red; padding-top: 10px;"><b>{{ message }}</b></p>
+        {% endfor %}    
     </div>
     <ul class="list-group">
         {% for postcodeitem in postcodes %}
@@ -21,9 +38,11 @@
                     <div class="col-sm-3">
                         {{ postcodeitem.postcode }}
                     </div>
-                    <div class="col-sm-2">
-                        {{ postcodeitem.postcodeId }} 
-                    </div>
+                    <!--
+                        <div class="col-sm-2">
+                            {{ postcodeitem.postcodeId }} 
+                        </div>
+                    -->
                     <div class="col-sm-3"> 
                     </div>
                     <div class="col-sm-3">

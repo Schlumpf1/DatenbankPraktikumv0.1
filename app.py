@@ -325,7 +325,7 @@ def restaurant_postcodes():
     if(not 'restaurant_username' in session):
         return render_template('restaurant_login.html')
     username = session['restaurant_username']
-    return render_template("restaurant_postcodes.html" , postcodes= zugreifer.getPostcodesForRestaurant(username))
+    return render_template("restaurant_postcodes.html" , postcodes= zugreifer.getPostcodesForRestaurant(username), message = None)
 
 @app.route("/restaurant/postcodes/delete_Postcode/<int:postcodeId>", methods=['POST'])
 def delete_Postcode(postcodeId):
@@ -333,6 +333,30 @@ def delete_Postcode(postcodeId):
         return render_template('restaurant_login.html')
     zugreifer.deletePostcodeWithId(postcodeId)
     return redirect("/restaurant/postcodes")
+
+@app.route("/restaurant/postcode/add_Postcode", methods=['POST'])
+def add_Postcode():
+    if(not 'restaurant_username' in session):
+        return render_template('restaurant_login.html')
+    postcode = request.form['postcode_To_Add']
+    username = session['restaurant_username']
+    messages = list()
+    if(len(postcode)==5):
+        if zugreifer.existPostcodeForRestaurant(postcode, username):
+            messages.append("Diese Postleitzahl beliefern Sie bereits")
+            return render_template("restaurant_postcodes.html" , postcodes= zugreifer.getPostcodesForRestaurant(username), messages =messages )
+        else:
+            zugreifer.addPostcode(postcode,username)
+    else:
+        messages.append("Die Postleitzahl muss genau 5 Zeichen lang sein")
+        return render_template("restaurant_postcodes.html" , postcodes= zugreifer.getPostcodesForRestaurant(username), messages = messages )
+    return redirect("/restaurant/postcodes")
+
+    
+    print(itemBild)
+    speisekartenId = zugreifer.getSpeisekarte(username)
+    zugreifer.insertNewItem(speisekartenId,itemName,itemPreis,itemBeschreibung,category)
+    return redirect("/restaurant")
 
 @app.route("/customer/login", methods =['POST', 'GET'])
 def customer_login():
