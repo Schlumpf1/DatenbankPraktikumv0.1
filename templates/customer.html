@@ -10,14 +10,36 @@
     </head>
     <body>
         <div class="container">
-            <h1 style="color:blue;">Willkomen bei Lieferspatz!</h1>
+            <h1 style="color:blue;">Willkomen bei Lieferspatz {{customer.vorname}} {{customer.nachname}}!</h1>
+            <br><br>
             <!--Liste der Items auf der Speisekarte-->
-                <div class="h-25 col-sm-9">
-                    
+                <div class="col-sm-9">
+                    <ul class="list-group">
+                        <!--vielleicht bietet sich es mehr an href bei bearbeiten & löschen zu benutzen-->
+                        {% for restaurant in restaurants %}
+                        <a href="/customer/speisekarte/{{restaurant.username}}">
+                            <li class="list-group-item" style="list-style-type: none;"">
+                                    <div class="row" style="padding: 0 10px;">
+                                        {{ restaurant.name }}
+                                    </div>
+                                    <div class="row" style="padding: 0 10px; ">
+                                        {{ restaurant.adresse }} 
+                                    </div>
+                                    <div class="row" style="color:darkgreen; padding: 0 10px;">
+                                        <b>Geöffnet</b>
+                                    </div>
+                            </li>  
+                        </a>
+                        <br>
+                        <hr>
+                        <br>
+                        {% endfor %}  
+                    </ul>
                 </div>
                 <!--DropdownMenü-->
                 <div class="col-sm-3" style="background-color:pink; padding-top: 50px;">
                     <ul role="menu" aria-labelledby="menu1">
+                        <li><a role="menuitem" tabindex="-1" href="/customer/basket">Warenkorb</a></li>
                         <li><a role="menuitem" tabindex="-1" href="/customer/bestellungen">Bestellungen</a></li>
                         <li><a role="menuitem" tabindex="-1" href="/customer/logout">Ausloggen</a></li>
                     </ul>

@@ -1,4 +1,6 @@
+import locale
 import sqlite3
+from time import strftime
 from module_item import *
 from module_openingTime import *
 from module_postcodeitem import *
@@ -8,6 +10,9 @@ from module_orderDetails import *
 from module_orderedItem import * 
 from module_customer import *
 from externMethods import *
+from datetime import *
+from module_menuItem import * 
+from module_basketItem import * 
 ####################
 ##____Methoden____##
 ####################
@@ -31,7 +36,7 @@ def createTB_Restaurant():
 def createTB_Item():
     con = sqlite3.connect("Database.db")
     cur = con.cursor()
-    cur.execute("CREATE TABLE 'items'('itemId' INTEGER PRIMARY KEY AUTOINCREMENT, 'speisekartenId' INTEGER, 'name' TEXT, 'preis' INTEGER, 'beschreibung' TEXT, 'bild' BLOB, 'category' text)")
+    cur.execute("CREATE TABLE 'items'('itemId' INTEGER PRIMARY KEY AUTOINCREMENT, 'speisekartenId' INTEGER, 'name' TEXT, 'preis' INTEGER, 'beschreibung' TEXT, 'bild' BLOB, 'category' text, FOREIGN KEY (speisekartenId) references speisekarten (speisekartenId))")
     cur.close()
     con.close()
 
@@ -73,7 +78,14 @@ def createTB_Postcode():
     cur.close()
     con.close()
 
+def createTB_basket():
+    con = sqlite3.connect('Database.db')
+    cur = con.cursor()
+    cur.execute("CREATE TABLE 'basket'('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'customer_username' TEXT, 'item_id' INTEGER, FOREIGN KEY(customer_username) references kunde(username))")
+    cur.close()
+    con.close()
 
+    
 #fuegt in die Datenabnk alle Tabellen ein
 def createTB_All():
     createTB_Kunde()
@@ -84,6 +96,7 @@ def createTB_All():
     createTB_OpeningTimes()
     createTB_Bestellt_Items()
     createTB_Postcode()
+    createTB_basket()
 
 def insertExampleData_All():
     #Kunde
@@ -91,19 +104,26 @@ def insertExampleData_All():
     insertNewKunde("MusterUser1", "password", "MixMuster", "Mustermann", "Musterstrasse 6, 50858 Köln", 50858)
     insertNewKunde("MusterUser2", "password2", "MuxMuster2", "Mustermann", "Musterstrasse 12, 40545 Stadt", 40545)
     restaurantId = insertNewRestaurant("firstRestaurant", "xyz123", "Musterrestaurant", "Musterwald 5")
+    insertNewRestaurant("secondRestaurant", "xyz123", "Musterrestaurant2", "Musterwald 5")
     speisekartenId = insertNewSpeisekarte("firstRestaurant")
+    speisekartenId2 = insertNewSpeisekarte("secondRestaurant")
+
     #speisekartenId = 1
     print("SpeisekartenId",speisekartenId)
     itemId1 = insertNewItem(speisekartenId,"Das beste Essen",10,"Nicht vorhandene Beschreibung","Vorspeise")
     itemId2 = insertNewItem(speisekartenId,"Das beste Essen1",20,"Nicht vorhandene Beschreibung","Vorspeise")
     itemId3 = insertNewItem(speisekartenId,"Das beste Essen2",10,"Nicht vorhandene Beschreibung","Nachtisch")
     itemId4 = insertNewItem(speisekartenId,"Das beste Essen3",15,"Nicht vorhandene Beschreibung", "Hauptgericht")
-    addPostcode(12345,"firstRestaurant")
+    insertNewItem(speisekartenId2,"Das beste Essen WOW1",10,"Nicht vorhandene Beschreibung","Getränk")
+    insertNewItem(speisekartenId2,"Das beste Essen WOW2",20,"Nicht vorhandene Beschreibung","Nachtisch")
+    insertNewItem(speisekartenId2,"Das beste Essen WOW3",10,"Nicht vorhandene Beschreibung","Nachtisch")
+    insertNewItem(speisekartenId2,"Das beste Essen WOW4",15,"Nicht vorhandene Beschreibung", "Hauptgericht")
+    addPostcode(47057,"firstRestaurant")
     addPostcode(12346,"firstRestaurant")
-    addPostcode(12347,"firstRestaurant")
-    addPostcode(12348,"firstRestaurant")
-    addOpeningTimes("firstRestaurant", "Montag",12,14)
-    addOpeningTimes("firstRestaurant", "Montag",15,16)
+    addPostcode(47057,"secondRestaurant")
+    addOpeningTimes("firstRestaurant", "Dienstag",datetime.strptime('10:00', '%H:%M').time(),datetime.strptime('22:00', '%H:%M').time())
+    addOpeningTimes("firstRestaurant", "Samstag",15,16)
+    addOpeningTimes("secondRestaurant", "Dienstag", datetime.strptime('08:00', '%H:%M').time(), datetime.strptime('20:00', '%H:%M').time())
     bestellungsId = addNewBestellung('In Bearbeitung', '20-12-2023', '08:00', 'text', 'firstRestaurant', 'MusterUser')
     addNewItemToBestellt(bestellungsId, itemId1, 1)
     addNewItemToBestellt(bestellungsId, itemId2, 2)
@@ -469,7 +489,7 @@ def getCustomerDetailsForOrder(orderId):
     result = cur.execute("SELECT k.vorname, k.nachname, k.adresse FROM kunde k, bestellung b where k.username=b.customer_username and b.bestell_id=" + str(orderId))
     customer1 = None
     for x in result:
-        customer1 = customer(None, None, x[0], x[1], x[2])
+        customer1 = customer(None, None, x[0], x[1], x[2], None)
     cur.close()
     con.close()
     return customer1;
@@ -534,6 +554,7 @@ def getItemById(itemId):
     con.close()
     print("GetItemById response with: "+ str(localItem))
     return localItem
+
 #Speisekartenid zuveraendern macht hier keinen Sinn, da jedes Restaurant nur eine Speisekarte hat
 def changeItemById(itemId, itemname, itempreis, itembeschreibung, category):
     con = sqlite3.connect("Database.db")
@@ -586,7 +607,113 @@ def removeItemFromSpeisekarte(itemId):
     con.close()
     print("Removed Item")
 
+# get postcode for customer
+def getDetailsForCustomer(username):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    result = cur.execute("SELECT vorname, nachname, adresse, postleitzahl FROM kunde where username='" + username + "'")
+    customer1 = None
+    for x in result:
+        customer1 = customer(None, None, x[0], x[1], x[2], x[3])
+    cur.close()
+    con.close()
+    return customer1;
+    
+def getListOfRestaurantsForCustomer(postcode, today, now):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    restaurants = list()    
+    result = cur.execute("select r.username, r.name, r.adresse from restaurant r join openingTimes o on r.username = o.restaurant_username join postcodes p on r.username = p.restaurant_username where p.postcode=" +  str(postcode) + " and day = '" + today + "' and o.fromTime <'" + str(now) + "' and o.toTime >='" +  str(now) +"'")
+    for x in result:
+        restaurants.append(restaurant(x[0], None, x[1], None, x[2], None))
+    cur.close()
+    con.commit()
+    con.close()
+    return restaurants   
 
+def getAllMenuItemsForRestaurant(restaurant_username):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    result =cur.execute("select i.itemId, i.name, i.preis, i.beschreibung, i.category from items i join speisekarten s on s.speisekartenId = i.speisekartenId join restaurant r on r.username = s.restaurant_username where r.username = '" + restaurant_username + "'")
+    menuItems = list()
+    for x in result:
+        menuItems.append(menuItem(x[0], x[1], x[2], x[3], x[4]))
+    cur.close()
+    con.commit()
+    con.close()
+    return menuItems
+
+def addItemToBasket(customer_username, itemId):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    cur.execute("INSERT INTO basket(customer_username, item_id) values(?,?)", (customer_username, itemId))
+    cur.close()
+    con.commit()
+    con.close()
+
+def getRestaurantName(restaurant_username):
+    con = sqlite3.connect("Database.db")
+    cur = con.cursor()
+    cur.execute("SELECT name FROM restaurant WHERE username='" + restaurant_username + "'")
+    zwischenspeicher = cur.fetchone()[0]
+    cur.close()
+    con.close()
+    return zwischenspeicher
+
+def getItemsFromBasket(customer_username):
+    con = sqlite3.connect('Database.db')
+    cur = con.cursor()
+    result = cur.execute("select b.id, i.itemId, i.name, i.preis from items i join basket b on b.item_id=i.itemId where b.customer_username='"+ customer_username + "'")
+    basketItems = list()
+    total = 0
+    for x in result:
+        total += x[3]
+        basketItems.append(basketItem(x[0], x[1], x[2], x[3]))
+    orderDetails1 = orderDetails(basketItems, total)
+    cur.close()
+    con.commit()
+    con.close()
+    return orderDetails1
+
+def deleteItemFromBasket(id):
+    con = sqlite3.connect('Database.db')
+    cur = con.cursor()
+    cur.execute("DELETE FROM basket where id=" + str(id))
+    cur.close()
+    con.commit()
+    con.close() 
+
+def insertNewOrder(customer_username, restaurant_username, zusatzText,  eingangsTag, eingangsUhrzeit):
+    con = sqlite3.connect('Database.db')
+    cur = con.cursor()
+    cur.execute("INSERT INTO bestellung(status, eingangsTag, eingangsUhrzeit, zusatzText, restaurant_username, customer_username) values(?,?,?,?,?,?)", 
+        ('In Bearbeitung', eingangsTag, eingangsUhrzeit, zusatzText, restaurant_username, customer_username));
+
+    bestell_id = cur.lastrowid;
+    cur.execute("INSERT INTO bestellt(bestell_id, itemId, anzahl) select " + str(bestell_id) + ", item_id, count(*) from basket where customer_username='" + customer_username + "' GROUP BY item_id")
+    cur.close()
+    con.commit()
+    con.close()
+    return bestell_id
+   
+
+def deleteItemsFromBasket(customer_username):
+    con = sqlite3.connect('Database.db')
+    cur = con.cursor()
+    cur.execute("DELETE FROM basket WHERE customer_username='" + customer_username + "'")
+    cur.close()
+    con.commit()
+    con.close()    
+
+def restaurantHasNewOrder(restaurant_username):
+    con = sqlite3.connect('Database.db')
+    cur = con.cursor()
+    cur.execute("SELECT EXISTS(SELECT * FROM bestellung where status='In Bearbeitung' and restaurant_username='" + restaurant_username + "')")
+    zwischenspeicher= cur.fetchone()[0]  
+    cur.close()
+    con.commit()
+    con.close()
+    return zwischenspeicher
 #
 #Ende Methodendefinition
 #

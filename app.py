@@ -1,9 +1,9 @@
-from flask import Flask, render_template, render_template, redirect, request, jsonify, session
+from flask import Flask, render_template, render_template, redirect, request, jsonify, session, flash
 import zugreifer
 from module_openingTime import *
 import os
 import re
-from datetime import datetime
+from datetime import date, datetime
 
 
 app = Flask(__name__)
@@ -13,6 +13,8 @@ app.secret_key = 'BAD_SECRET_KEY'
 @app.route("/")
 def home():
     return render_template("startpage.html")
+
+
 
 @app.route("/initTables")
 def initTables():
@@ -30,7 +32,9 @@ def home1():
 def restaurant():
     if(not 'restaurant_username' in session):
         return render_template('restaurant_login.html')
-    return render_template('speisekarte.html', items=zugreifer.getItemsVonSpeisekarte(zugreifer.getSpeisekarte(session['restaurant_username'])))
+    
+    name = zugreifer.getRestaurantName(session['restaurant_username'])    
+    return render_template('speisekarte.html', items=zugreifer.getItemsVonSpeisekarte(zugreifer.getSpeisekarte(session['restaurant_username'])), name=name)
 
 @app.route("/restaurant/logout")
 def restaurant_logout():
@@ -40,6 +44,7 @@ def restaurant_logout():
 @app.route("/customer/logout")
 def customer_logout():
     session.pop("customer_username", None)
+    session.pop('chosen_restaurant', None)
     return render_template('startpage.html')
 
 @app.route('/restaurant/bestellungen/neu')
@@ -409,7 +414,93 @@ def customer_register():
 def customer():
     if(not 'customer_username' in session):
         return redirect('/customer/login')
-        
-    return render_template('customer.html', username = session['customer_username']);
+    username = session['customer_username']
+    customer = zugreifer.getDetailsForCustomer(username)
+    time = datetime.now().strftime("%H:%M:%S")
+    day = datetime.now().strftime("%A")
+    if day == 'Monday':
+        day = 'Montag'
+    elif day == 'Tuesday':
+        day = 'Dienstag'
+    elif day == 'Wednesday':
+        day = 'Mittwoch'
+    elif day == 'Thursday':
+        day = 'Donnerstag'
+    elif day == 'Friday':
+        day = 'Freitag'
+    elif day == 'Saturday':
+        day = 'Samstag'
+    else:
+        day = 'Sonntag'  
+    print(time)  
+    print(str(time))
+    restaurants = zugreifer.getListOfRestaurantsForCustomer(customer.plz, day, time)                        
+    return render_template('customer.html', customer=customer, restaurants = restaurants);
+
+@app.route("/customer/speisekarte/<username>")
+def restaurantMenu(username):
+    if(not 'customer_username' in session):
+        return redirect('/customer/login')
+    if('chosen_restaurant' in session and username != session['chosen_restaurant']):
+        zugreifer.deleteItemsFromBasket(session['customer_username'])
+    session['chosen_restaurant'] = username
+    restaurant_name = zugreifer.getRestaurantName(username)
+    menuItems = zugreifer.getAllMenuItemsForRestaurant(username)
+    drinks = []
+    desserts = []
+    mainCourses = []
+    starters = []
+    for item in menuItems:
+        print(item.category)
+        if item.category == 'Getränk':
+            drinks.append(item)
+        elif item.category == 'Nachtisch':
+            desserts.append(item)
+        elif item.category == 'Vorspeise':
+            starters.append(item)
+        else: 
+            mainCourses.append(item)
+    print(desserts)
+    print(starters)        
+    return render_template('customer_menu.html', drinks=drinks, desserts=desserts, mainCourses=mainCourses, starters=starters,restaurant_name=restaurant_name)
+
+@app.route('/customer/speisekarte/')
+def restaurantMenu2():
+    return redirect("/customer/speisekarte/" + session['chosen_restaurant'])
 
 
+@app.route("/customer/add/warenkorb/<int:itemId>", methods=['POST'])
+def addToCart(itemId):
+    customer_username = session['customer_username']
+    zugreifer.addItemToBasket(customer_username, itemId)
+    return restaurantMenu(session['chosen_restaurant'])
+
+
+@app.route('/customer/basket')
+def getBasket():
+    if(not 'customer_username' in session):
+        return redirect('/customer/login')
+    if(not 'chosen_restaurant' in session):
+        return render_template('restaurant_not_chosen.html', message="Sie sollen ein Restaurant auswählen!")
+    restaurant_name = zugreifer.getRestaurantName(session['chosen_restaurant'])
+    orderDetails = zugreifer.getItemsFromBasket(session['customer_username'])
+    return render_template('basket.html', orderDetails = orderDetails, restaurant_name = restaurant_name)
+
+
+@app.route('/customer/basket/update/<int:id>', methods=['POST'])
+def updateBasket(id):
+    zugreifer.deleteItemFromBasket(id)
+    return getBasket()
+
+
+@app.route('/customer/order/finish', methods=['POST'])
+def finishOrder():
+    zusatz = request.form['zusatz']
+    now = datetime.now()
+    eingangsUhrzeit = now.strftime('%H:%M:%S')
+    today = date.today()
+    zugreifer.insertNewOrder(session['customer_username'], session['chosen_restaurant'], zusatz, today, eingangsUhrzeit)
+    zugreifer.deleteItemsFromBasket(session['customer_username'])
+    flash(session['chosen_restaurant'] + ": Sie haben eine neue Bestellung erhalten")
+    session.pop('chosen_restaurant', None)
+    return redirect('/customer')

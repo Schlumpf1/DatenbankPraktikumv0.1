@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"!>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <title>Speisekarte</title>
+</head>
+<body>
+    <h1>Speisekarte von {{ restaurant_name }}!</h1>
+    <div>
+      <div>
+        <ul>
+          <h3>Getränke</h3>
+            {%for drink in drinks%}
+            <li class="list-group-item" style="list-style-type: none;">
+                <div class="row">
+                    <div class="col-sm-1">{{drink.name}}</div>
+                    <div class="col-sm-5">
+                        {{drink.beschreibung}} 
+                    </div>
+                    <div class="col-sm-2">
+                      {{drink.preis}}
+                    </div>
+                    <div class="col-sm-3">
+                      <form action="{{ url_for('addToCart',itemId =drink.itemId)}}" method="POST" >
+                      <button type="submit">hinzufügen</button>
+                    </form>  
+                  </div>
+            </li>  
+            {% endfor %}
+            <hr>
+            <h3>Vorspeisen</h3>
+            {%for starter in starters%}
+            <li class="list-group-item" style="list-style-type: none;">
+                <div class="row">
+                    <div class="col-sm-1">{{starter.name}}</div>
+                    <div class="col-sm-5">
+                        {{starter.beschreibung}} 
+                    </div>
+                    <div class="col-sm-2">
+                      {{starter.preis}}
+                    </div>
+                    <div class="col-sm-3">
+                      <form action="{{ url_for('addToCart',itemId =starter.itemId)}}" method="POST" >
+                      <button type="submit">hinzufügen</button>
+                    </form>  
+                  </div>
+            </li>  
+            {% endfor %}
+            <hr>
+            <h3>Hauptspeisen</h3>
+            {%for main in mainCourses %}
+            <li class="list-group-item" style="list-style-type: none;">
+                <div class="row">
+                    <div class="col-sm-1">{{main.name}}</div>
+                    <div class="col-sm-5">
+                        {{main.beschreibung}} 
+                    </div>
+                    <div class="col-sm-2">
+                      {{main.preis}}
+                    </div>
+                    <div class="col-sm-3">
+                      <form action="{{ url_for('addToCart',itemId =main.itemId)}}" method="POST" >
+                      <button type="submit">hinzufügen</button>
+                    </form>  
+                  </div>
+            </li>  
+            {% endfor %}
+
+            <hr>
+            <h3>Nachtisch</h3>
+            {%for dessert in desserts %}
+            <li class="list-group-item" style="list-style-type: none;">
+                <div class="row">
+                    <div class="col-sm-1">{{dessert.name}}</div>
+                    <div class="col-sm-5">
+                        {{dessert.beschreibung}} 
+                    </div>
+                    <div class="col-sm-2">
+                      {{dessert.preis}}
+                    </div>
+                    <div class="col-sm-3">
+                      <form action="{{ url_for('addToCart',itemId =dessert.itemId)}}" method="POST" >
+                      <button type="submit">hinzufügen</button>
+                    </form>  
+                  </div>
+            </li> 
+            {% endfor %}
+
+        </ul>           
+    </div>
+   
+    <div class="row">
+        <div class="col-sm-10">
+            <form action="{{url_for('customer')}}" method="GET">
+                <button>zurück</button>
+            </form>
+        </div>
+        <div class="col-sm-10">
+            <form action="{{url_for('getBasket')}}" method="GET">
+                <button>Weiter zum Warenkorb</button>
+            </form>
+        </div>
+    </div>
+ 
+</body>
+</html>

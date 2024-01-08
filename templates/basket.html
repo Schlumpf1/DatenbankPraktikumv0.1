@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"!>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <title>Willkomen bei Lieferspatz</title>
+    </head>
+<body>
+    <h1>Ihr Warenkorb</h1>
+    <h2>Sie bestellen bei {{restaurant_name}}</h2>
+    <h3>{{restaurant_username}}</h3>
+
+    <table id="data" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Preis €</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in orderDetails.items %}
+            <tr>
+              <td>{{ item.name }}</td>
+              <td>{{ item.preis }}</td>
+              <td>
+                <form action="{{ url_for('updateBasket',id =item.id) }}" method="POST">
+                    <button>Löschen</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+          <tr>
+            <td>Gesamt</td>
+            <td>{{orderDetails.total}}</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table> 
+      <div class="row">
+        <div class="col-sm-2">
+            <form action="{{url_for('restaurantMenu', username=chosen)}}">
+                <button type="submit">Abbrechen</button>
+            </form>
+        </div>
+        <div class="col-sm-2">
+          <form action="{{url_for('restaurantMenu2')}}">
+            <button type="submit">Zurück</button>
+        </form>
+        </div>
+        <div class="col-sm-2">
+            <form action="{{url_for('finishOrder')}}" method="POST">
+                <textarea cols="30" rows="5" name="zusatz"></textarea>
+                <button type="submit">Bestätigen</button>
+            </form>
+        </div>
+      </div>      
+</body>
+</html>
