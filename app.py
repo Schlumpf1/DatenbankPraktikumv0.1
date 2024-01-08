@@ -58,7 +58,10 @@ def newOrders():
 
 @app.route('/restaurant/new_order_details/<int:orderId>', methods=['POST'])
 def newOrderDetails(orderId):
-    return render_template('restaurant_new_order_details.html')
+    customer = zugreifer.getCustomerDetailsForOrder(orderId)
+    bestellung = zugreifer.getOrderDetailsForOrder(orderId)
+    orderDetails = zugreifer.getItemDetailsForOdrer(orderId)
+    return render_template('restaurant_new_order_details.html', orderId = orderId, customer = customer, bestellung = bestellung, orderDetails = orderDetails)
 
 
 @app.route('/restaurant/bestellungen')
@@ -66,10 +69,11 @@ def restaurantOrders():
     if(not 'restaurant_username' in session):
         return render_template('restaurant_login.html')
     username = session['restaurant_username']
+    openOrders = zugreifer.getNewOrdersForRestaurant(username)
     pendingOrders = zugreifer.getPendingOrdersForRestaurant(username)
     finishedOrders = zugreifer.getFinishedOrdersForRestaurant(username)
     canceledOrders = zugreifer.getCanceledOrdersForRestaurant(username)
-    return render_template('restaurant_orders.html', pendingOrders = pendingOrders, finishedOrders = finishedOrders, canceledOrders = canceledOrders)    
+    return render_template('restaurant_orders.html',openOrders = openOrders, pendingOrders = pendingOrders, finishedOrders = finishedOrders, canceledOrders = canceledOrders)    
 
 @app.route('/restaurant/order_details/<int:orderId>', methods=['POST'])
 def restaurantOrderDetails(orderId):
@@ -81,6 +85,16 @@ def restaurantOrderDetails(orderId):
 @app.route('/restaurant/bestellungen/<int:orderId>', methods=['POST'])
 def setOrderAsDone(orderId):
     zugreifer.changeBestellungStatus(orderId, "Abgeschlossen")
+    return restaurantOrderDetails(orderId)
+
+@app.route('/restaurant/bestellungen/accept/<int:orderId>', methods=['POST'])
+def setOrderAsAccepted(orderId):
+    zugreifer.changeBestellungStatus(orderId, "In Zubereitung")
+    return restaurantOrderDetails(orderId)
+
+@app.route('/restaurant/bestellungen/cancel/<int:orderId>', methods=['POST'])
+def setOrderAsCancelled(orderId):
+    zugreifer.changeBestellungStatus(orderId, "Storniert")
     return restaurantOrderDetails(orderId)
 
 

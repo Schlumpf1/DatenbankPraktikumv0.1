@@ -9,6 +9,79 @@
         <title>Details zur neuen Bestellung</title>
     </head>
     <body>
-        Details
+        <h1>Bestellung {{orderId}}</h1>
+        <hr><br>
+        <div class="container">
+            <div class="row" style="color:blue">
+                <b>Kunde: {{ customer.vorname}} {{customer.nachname}}</b>
+            </div>
+            <div class="row" style="color: blue">
+                <b> Adresse: {{ customer.adresse}}</b>
+            </div>
+            <br><br>
+            <div style="color: darkgreen">
+                <div class="row">
+                    <b>Status: {{bestellung.status}}</b>
+                </div>
+                <div class="row">
+                    <b>Eingangstag: {{bestellung.date}}</b>
+                </div>
+                <div class="row">
+                    <b>Eingangsuhrzeit: {{bestellung.time}}</b>
+                </div>  
+                <div class="row">
+                    <b>Zusatztext: {{bestellung.text}}</b>
+                </div>  
+            </div>
+        </div>
+        <table id="data" class="table table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Preis €</th>
+                <th>Anzahl</th>
+                <th>Gesamt €</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in orderDetails.items %}
+                <tr>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.preis }}</td>
+                  <td>{{ item.count }}</td>
+                  <td>{{ item.sum }}</td>
+                </tr>
+              {% endfor %}
+              <tr>
+                <td>Gesamt</td>
+                <td></td>
+                <td></td>
+                <td>{{orderDetails.total}}</td>
+              </tr>
+            </tbody>
+          </table>            
+          
+           
+        
+          <div class="conatiner row">
+            <form action="/restaurant" method="get">
+                <button type="submit">Zurück zur Homepage</button>
+            </form>
+          </div>
+
+          <div class="container row-sm-20">
+            <form action="{{ url_for('setOrderAsAccepted',orderId = orderId) }}" method=post >
+                <input type=hidden name=orderId value="{{orderId}}"  />
+                <button type="submit">Annehmen</button>
+            </form> 
+         </div>
+
+         <div class="container row-sm-20">
+            <form action="{{ url_for('setOrderAsCancelled',orderId = orderId) }}" method=post >
+                <input type=hidden name=orderId value="{{orderId}}"  />
+                <button type="submit">Ablehnen</button>
+            </form> 
+         </div>
+         
     </body>
 </html>

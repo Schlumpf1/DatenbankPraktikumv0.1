@@ -154,21 +154,6 @@ def insertNewKunde(username, password,vorname,nachname,adresse, plz):
     print("Inserted new Customer with the username "+username)
     return zwischenspeicher
 
-#eine Bestellung soll aufgegeben werden
-def bestellungAufgeben():
-    con = sqlite3.connect("Database.db")
-    cur = con.cursor()
-    cur.close()
-    con.commit()
-    con.close()
-
-#Bestellverlauf soll so eingesehen werden koennen
-def bestellungVorhanden():
-    con = sqlite3.connect("Database.db")
-    cur = con.cursor()
-    cur.close()
-    con.close()
-
 
 #
 #restaurantaccountverwaltungsmethoden
